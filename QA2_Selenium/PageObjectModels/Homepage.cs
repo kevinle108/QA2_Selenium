@@ -30,9 +30,6 @@ namespace QA_2_Browser_Testing.PageObjectModels
 
         //public IWebElement EventHeader => Driver.FindElement(By.XPath("//h2[text()='Event QR Code']"));
         public IWebElement EventHeader => Driver.FindElement(By.XPath("//*[@id=\"event\"]/h2"));
-        //Driver.FindElement(By.XPath("//*[@id=\"event\"]/h2")).isDisplayed();
-
-
 
     }
 }

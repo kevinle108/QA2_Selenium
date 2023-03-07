@@ -6,11 +6,11 @@ using FluentAssertions;
 
 namespace QA2_Selenium
 {
-    public class UnitTest1
+    public class UnitTests
     {
         private readonly ITestOutputHelper output;
 
-        public UnitTest1(ITestOutputHelper output)
+        public UnitTests(ITestOutputHelper output)
         {
             this.output = output;
         }
@@ -27,6 +27,8 @@ namespace QA2_Selenium
                 homePage.EventButton.Click();
 
                 IWebElement eventHeader = homePage.EventHeader;
+
+                eventHeader.Displayed.Should().BeTrue();
                 
 
                 Thread.Sleep(2000);
