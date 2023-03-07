@@ -147,7 +147,7 @@ namespace QA2_Selenium
             }
         }
         [Fact]
-        public void Show_DatePicker_Widget_Via_Wait()
+        public async Task Show_DatePicker_Widget_Via_Wait()
         {
             using (IWebDriver driver = new ChromeDriver())
             {
@@ -168,6 +168,7 @@ namespace QA2_Selenium
                     wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[@class='bootstrap-datetimepicker-widget dropdown-menu top']")));
                 Thread.Sleep(TimeSpan.FromSeconds(5));
                 string pageSource = driver.PageSource;
+                await File.WriteAllTextAsync("PageSource.html", pageSource);
 
                 var columns = dateWidget.FindElements(By.TagName("td"));
                 Thread.Sleep(TimeSpan.FromSeconds(5));
