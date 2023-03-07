@@ -36,6 +36,7 @@ namespace QA_2_Browser_Testing.PageObjectModels
         public IWebElement EventEndDatePicker => Driver.FindElement(By.XPath("//*[@id=\"eventend\"]"));
         public IWebElement EventNotes => Driver.FindElement(By.XPath("//label[text()='Notes']/following-sibling::textarea"));
         public IWebElement EventSaveButton => Driver.FindElement(By.XPath("//span[@id='preloadSave']//parent::button"));
+        public IWebElement EventTooltip => Driver.FindElement(By.XPath("//span[@class='tooltip2']"));
         //span[@id='preloadSave']//parent::button
 
 

@@ -53,6 +53,7 @@ namespace QA2_Selenium
         {
             using (IWebDriver driver = new ChromeDriver())
             {
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
                 driver.Manage().Window.Maximize();
                 driver.Navigate().GoToUrl("https://4qrcode.com/");
 
@@ -65,7 +66,12 @@ namespace QA2_Selenium
                 homePage.EventStartDatePicker.SendKeys("March 31, 2023 1:00 PM");
                 homePage.EventEndDatePicker.SendKeys("March 31, 2023 5:00 PM");
                 homePage.EventNotes.SendKeys("To celebrate completing the Code Louisville QA track!");
+                //bool canSave = homePage.EventSaveButton.Enabled;
 
+                IWebElement saveBtn =
+                    wait.Until(ExpectedConditions.ElementToBeClickable(homePage.EventSaveButton));
+
+                saveBtn.Click();
 
                 //WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(2));
                 //IWebElement datePickerWidget =
@@ -74,7 +80,7 @@ namespace QA2_Selenium
 
 
 
-                Thread.Sleep(10000);
+                Thread.Sleep(TimeSpan.FromSeconds(2));
 
 
 
