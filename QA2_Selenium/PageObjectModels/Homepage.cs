@@ -1,4 +1,6 @@
 ﻿using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.WaitHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +13,12 @@ namespace QA_2_Browser_Testing.PageObjectModels
     {
         private readonly IWebDriver Driver;
 
+        private readonly WebDriverWait Wait;
+
         public HomePage(IWebDriver driver)
         {
             Driver = driver;
+            Wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
         }
         
         // TODO: Remove this
@@ -38,6 +43,11 @@ namespace QA_2_Browser_Testing.PageObjectModels
         public IWebElement EventSaveButton => Driver.FindElement(By.XPath("//span[@id='preloadSave']//parent::button"));
         public IWebElement EventTooltip => Driver.FindElement(By.XPath("//span[@class='tooltip2']"));
         public IWebElement EventDownloadPngButton => Driver.FindElement(By.XPath("//div[contains(@class, 'linksholder')]//button[contains(@class, 'svgtopng')]"));
+
+        public void ClickSavePngButton()
+        {
+            Wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[contains(@class, 'linksholder')]//button[contains(@class, 'svgtopng')]"))).Click();
+        }
 
         //div[contains(@class, 'linksholder')]//button[contains(@class, 'svgtopng')]
 

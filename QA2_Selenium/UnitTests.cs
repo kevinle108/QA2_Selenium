@@ -199,7 +199,10 @@ namespace QA2_Selenium
 
                 saveBtn.Click();
 
-                wait.Until(ExpectedConditions.ElementToBeClickable(homePage.EventDownloadPngButton)).Click();
+                Thread.Sleep(TimeSpan.FromSeconds(3));
+
+                //wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[contains(@class, 'linksholder')]//button[contains(@class, 'svgtopng')]"))).Click();
+                homePage.ClickSavePngButton();
 
                 Thread.Sleep(TimeSpan.FromSeconds(10));
             }
