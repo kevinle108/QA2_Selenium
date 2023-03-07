@@ -18,6 +18,12 @@ namespace QA2_Selenium
             this.output = output;
         }
 
+        public async Task DownloadPageSourceAsync(IWebDriver driver)
+        {
+            string pageSource = driver.PageSource;
+            await File.WriteAllTextAsync("PageSource.html", pageSource);
+        }
+
         // click the event button to display the event qr generator
         [Fact]
         public void LoadEventSection()
@@ -159,23 +165,34 @@ namespace QA2_Selenium
 
                 homePage.EventButton.Click();
 
-                IWebElement startDatePicker = homePage.EventStartDatePicker;
-                //String javascript = "arguments[0].click()";
-                //IJavaScriptExecutor jse = (IJavaScriptExecutor)driver;
-                //jse.ExecuteScript(javascript, startDatePicker);
-                startDatePicker.Click();
+                homePage.EventTitle.SendKeys("Pants Appreciation Month");
+                homePage.EventLocation.SendKeys("Everywhere");
+
+                homePage.EventStartDatePicker.Click();
+
                 IWebElement dateWidget =
                     wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[@class='bootstrap-datetimepicker-widget dropdown-menu top']")));
-                Thread.Sleep(TimeSpan.FromSeconds(5));
-                string pageSource = driver.PageSource;
-                await File.WriteAllTextAsync("PageSource.html", pageSource);
 
-                var columns = dateWidget.FindElements(By.TagName("td"));
-                Thread.Sleep(TimeSpan.FromSeconds(5));
-                return;
-                homePage.EventStartDatePicker.SendKeys("March 31, 2023 1:00 PM");
-                homePage.EventEndDatePicker.SendKeys("March 31, 2023 5:00 PM");
-                homePage.EventNotes.SendKeys("To celebrate completing the Code Louisville QA track!");
+                List<IWebElement> days = dateWidget.FindElements(By.XPath("//td[@data-action='selectDay']")).ToList();
+
+                // Get the current month
+                var month = DateTime.Now.Month;
+                var year = DateTime.Now.Year;
+                var lastDayOfMonth = DateTime.DaysInMonth(year, month);                
+
+                IWebElement first = dateWidget.FindElement(By.XPath("//td[text()='1']"));
+                //IWebElement fifth = dateWidget.FindElement(By.XPath("//td[text()='5']"));
+                first.Click();
+                //Thread.Sleep(TimeSpan.FromSeconds(10));
+                //fifth.Click();
+                wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//td[text()='1']"))).Click();
+
+                homePage.EventEndDatePicker.Click();
+                dateWidget = wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[@class='bootstrap-datetimepicker-widget dropdown-menu top']")));
+                var dayOptions = dateWidget.FindElements(By.XPath($"//td[text()='{lastDayOfMonth}']"));
+                dayOptions[dayOptions.Count - 1].Click();                 
+
+                homePage.EventNotes.SendKeys("Celebrate pants all month long!");
                 //bool canSave = homePage.EventSaveButton.Enabled;
 
                 IWebElement saveBtn =
@@ -183,24 +200,7 @@ namespace QA2_Selenium
 
                 saveBtn.Click();
 
-                //WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(2));
-                //IWebElement datePickerWidget =
-                //    wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("div[@class='bootstrap-datetimepicker-widget dropdown-menu top'")));
-
-
-
-
-                Thread.Sleep(TimeSpan.FromSeconds(2));
-
-
-
-                //string title = driver.Title;
-                //IWebElement houseinfo = driver.FindElement(By.Id("house-info"));
-
-                //title.Should().Be("8110 Kellerman Rd, Louisville, KY 40219 | MLS# 1631002 | Redfin");
-                //houseinfo.Text.Should().Be("");
-                //title.Should().Be("Docs • Svelte");
-
+                Thread.Sleep(TimeSpan.FromSeconds(10));
             }
         }
     }
