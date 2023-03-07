@@ -32,11 +32,14 @@ namespace QA_2_Browser_Testing.PageObjectModels
         public IWebElement EventHeader => Driver.FindElement(By.XPath("//*[@id=\"event\"]/h2"));
         public IWebElement EventTitle => Driver.FindElement(By.XPath("//label[text()='Event title']/following-sibling::input"));        
         public IWebElement EventLocation => Driver.FindElement(By.XPath("//label[text()='Location']/following-sibling::input"));        
-        public IWebElement EventStartDatePicker => Driver.FindElement(By.XPath("//*[@id=\"eventstart\"]"));
-        public IWebElement EventEndDatePicker => Driver.FindElement(By.XPath("//*[@id=\"eventend\"]"));
+        public IWebElement EventStartDatePicker => Driver.FindElement(By.XPath("//*[@id='eventstart']"));
+        public IWebElement EventEndDatePicker => Driver.FindElement(By.XPath("//*[@id='eventend']"));
         public IWebElement EventNotes => Driver.FindElement(By.XPath("//label[text()='Notes']/following-sibling::textarea"));
         public IWebElement EventSaveButton => Driver.FindElement(By.XPath("//span[@id='preloadSave']//parent::button"));
         public IWebElement EventTooltip => Driver.FindElement(By.XPath("//span[@class='tooltip2']"));
+        public IWebElement EventDownloadPngButton => Driver.FindElement(By.XPath("//div[contains(@class, 'linksholder')]//button[contains(@class, 'svgtopng')]"));
+
+        //div[contains(@class, 'linksholder')]//button[contains(@class, 'svgtopng')]
 
     }
 }

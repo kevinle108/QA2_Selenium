@@ -193,12 +193,13 @@ namespace QA2_Selenium
                 dayOptions[dayOptions.Count - 1].Click();                 
 
                 homePage.EventNotes.SendKeys("Celebrate pants all month long!");
-                //bool canSave = homePage.EventSaveButton.Enabled;
 
                 IWebElement saveBtn =
                     wait.Until(ExpectedConditions.ElementToBeClickable(homePage.EventSaveButton));
 
                 saveBtn.Click();
+
+                wait.Until(ExpectedConditions.ElementToBeClickable(homePage.EventDownloadPngButton)).Click();
 
                 Thread.Sleep(TimeSpan.FromSeconds(10));
             }
