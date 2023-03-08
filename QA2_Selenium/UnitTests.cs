@@ -20,7 +20,6 @@ using FluentAssertions.Execution;
 // Tooltip6
 // https://me-qr.com/ + https://me-qr-scanner.com/qr-scanner#scan-using-file
 
-
 // File Download
 // https://www.youtube.com/watch?v=w1QA5-rYELg
 // https://www.youtube.com/watch?v=_8fwyB0t5Ac
