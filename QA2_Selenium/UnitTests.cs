@@ -30,9 +30,11 @@ namespace QA2_Selenium
         {
             using (IWebDriver driver = new ChromeDriver())
             {
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+
                 driver.Navigate().GoToUrl("https://4qrcode.com/");
 
-                var homePage = new HomePage(driver);
+                var homePage = new PageModel(driver, wait);
 
                 homePage.EventButton.Click();
 
@@ -64,14 +66,14 @@ namespace QA2_Selenium
                 driver.Manage().Window.Maximize();
                 driver.Navigate().GoToUrl("https://4qrcode.com/");
 
-                var homePage = new HomePage(driver);
+                var homePage = new PageModel(driver, wait);
 
                 homePage.EventButton.Click();
 
                 homePage.EventTitle.SendKeys("End of Class Party");
                 homePage.EventLocation.SendKeys("Online");
-                homePage.EventStartDatePicker.SendKeys("March 31, 2023 1:00 PM");
-                homePage.EventEndDatePicker.SendKeys("March 31, 2023 5:00 PM");
+                homePage.EventStartDateInput.SendKeys("March 31, 2023 1:00 PM");
+                homePage.EventEndDateInput.SendKeys("March 31, 2023 5:00 PM");
                 homePage.EventNotes.SendKeys("To celebrate completing the Code Louisville QA track!");
                 //bool canSave = homePage.EventSaveButton.Enabled;
 
@@ -110,11 +112,11 @@ namespace QA2_Selenium
                 driver.Manage().Window.Maximize();
                 driver.Navigate().GoToUrl("https://4qrcode.com/");
 
-                var homePage = new HomePage(driver);
+                var homePage = new PageModel(driver, wait);
 
                 homePage.EventButton.Click();
 
-                IWebElement startDatePicker = homePage.EventStartDatePicker;
+                IWebElement startDatePicker = homePage.EventStartDateInput;
                 String javascript = "arguments[0].click()";
                 IJavaScriptExecutor jse = (IJavaScriptExecutor)driver;
                 jse.ExecuteScript(javascript, startDatePicker);
@@ -122,8 +124,8 @@ namespace QA2_Selenium
                 var columns = dateWidget.FindElements(By.TagName("td"));
                 Thread.Sleep(TimeSpan.FromSeconds(5));
                 return;
-                homePage.EventStartDatePicker.SendKeys("March 31, 2023 1:00 PM");
-                homePage.EventEndDatePicker.SendKeys("March 31, 2023 5:00 PM");
+                homePage.EventStartDateInput.SendKeys("March 31, 2023 1:00 PM");
+                homePage.EventEndDateInput.SendKeys("March 31, 2023 5:00 PM");
                 homePage.EventNotes.SendKeys("To celebrate completing the Code Louisville QA track!");
                 //bool canSave = homePage.EventSaveButton.Enabled;
 
@@ -153,58 +155,27 @@ namespace QA2_Selenium
             }
         }
         [Fact]
-        public async Task Show_DatePicker_Widget_Via_Wait()
+        public async Task Generate_And_Download_Event_QR_Code()
         {
             using (IWebDriver driver = new ChromeDriver())
             {
                 WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+                PageModel page = new PageModel(driver, new WebDriverWait(driver, TimeSpan.FromSeconds(5)));
+                
                 driver.Manage().Window.Maximize();
                 driver.Navigate().GoToUrl("https://4qrcode.com/");
-
-                var homePage = new HomePage(driver);
-
-                homePage.EventButton.Click();
-
-                homePage.EventTitle.SendKeys("Pants Appreciation Month");
-                homePage.EventLocation.SendKeys("Everywhere");
-
-                homePage.EventStartDatePicker.Click();
-
-                IWebElement dateWidget =
-                    wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[@class='bootstrap-datetimepicker-widget dropdown-menu top']")));
-
-                List<IWebElement> days = dateWidget.FindElements(By.XPath("//td[@data-action='selectDay']")).ToList();
-
-                // Get the current month
-                var month = DateTime.Now.Month;
-                var year = DateTime.Now.Year;
-                var lastDayOfMonth = DateTime.DaysInMonth(year, month);                
-
-                IWebElement first = dateWidget.FindElement(By.XPath("//td[text()='1']"));
-                //IWebElement fifth = dateWidget.FindElement(By.XPath("//td[text()='5']"));
-                first.Click();
-                //Thread.Sleep(TimeSpan.FromSeconds(10));
-                //fifth.Click();
-                wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//td[text()='1']"))).Click();
-
-                homePage.EventEndDatePicker.Click();
-                dateWidget = wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[@class='bootstrap-datetimepicker-widget dropdown-menu top']")));
-                var dayOptions = dateWidget.FindElements(By.XPath($"//td[text()='{lastDayOfMonth}']"));
-                dayOptions[dayOptions.Count - 1].Click();                 
-
-                homePage.EventNotes.SendKeys("Celebrate pants all month long!");
-
-                IWebElement saveBtn =
-                    wait.Until(ExpectedConditions.ElementToBeClickable(homePage.EventSaveButton));
-
-                saveBtn.Click();
+                page.EventButton.Click();
+                page.EventTitle.SendKeys("Pants Appreciation Month");
+                page.EventLocation.SendKeys("Everywhere");
+                page.EventStartDateInput.Click();
+                page.EventFirstDayOfMonth.Click();
+                page.EventEndDateInput.Click();
+                page.EventLastDayOfMonth.Click();                 
+                page.EventNotes.SendKeys("Celebrate pants all month long!");
+                page.EventSaveButton.Click();
+                page.EventSavePngButton.Click();
 
                 Thread.Sleep(TimeSpan.FromSeconds(3));
-
-                //wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[contains(@class, 'linksholder')]//button[contains(@class, 'svgtopng')]"))).Click();
-                homePage.ClickSavePngButton();
-
-                Thread.Sleep(TimeSpan.FromSeconds(10));
             }
         }
     }
