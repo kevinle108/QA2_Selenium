@@ -113,39 +113,60 @@ namespace QA2_Selenium
                 
                 driver.Manage().Window.Maximize();
                 driver.Navigate().GoToUrl("https://4qrcode.com/");
+
+                // Fill out Event form
+                string title = "Pants Appreciation Month";
+                string location = "Everywhere";
+                string description = "Celebrate pants all month long!";
+
                 page.EventButton.Click();
-                page.EventTitle.SendKeys("Pants Appreciation Month");
-                page.EventLocation.SendKeys("Everywhere");
+                page.EventTitle.SendKeys(title);
+                page.EventLocation.SendKeys(location);
                 page.EventStartDateInput.Click();
                 page.EventFirstDayOfMonth.Click();
                 page.EventEndDateInput.Click();
                 page.EventLastDayOfMonth.Click();                 
-                page.EventNotes.SendKeys("Celebrate pants all month long!");
+                page.EventNotes.SendKeys(description);
                 page.EventSaveButton.Click();
 
+                // Optional: Show tooltip
+                Actions actions = new Actions(driver);
+                actions.MoveToElement(page.EventToolTip).Perform();
 
+                // Download QR code png file
                 page.EventSavePngButton.Click();
                 Thread.Sleep(TimeSpan.FromSeconds(5));
 
-                var png = page.EventPngName;
-                string fileName = png.GetAttribute("download");
+
+                // Get the file name and path for file upload
+                string fileName = page.EventPngName.GetAttribute("download");
+                string filePath = Path.Combine(downloadDirectory, fileName).Replace("\\", "\\\\");
                 output.WriteLine(fileName);
                 output.WriteLine(Directory.GetCurrentDirectory());
-                var file = Directory.GetFiles(downloadDirectory, fileName)[0];
+                output.WriteLine(filePath);
 
-                File.Move(file, Path.Combine(Directory.GetCurrentDirectory(), fileName));
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////
+                
+                // TODO: Refactor file upload code
+                // use anchor link instead of navigate
+                driver.Navigate().GoToUrl("https://4qrcode.com/scan-qr-code.php");
 
+                // Upload file
+                IWebElement fileUpload = driver.FindElement(By.XPath("//input[@id='file-selector']"));
+                fileUpload.SendKeys(filePath);
+                Thread.Sleep(TimeSpan.FromSeconds(3));
 
-                // Move the downloaded file to the project folder
-                //string[] files = Directory.GetFiles(downloadDirectory);
-                //foreach (string file in files)
-                //{
-                //    if (file.EndsWith(".pdf")) // Check for the file extension
-                //    {
-                //        File.Move(file, Path.Combine(Directory.GetCurrentDirectory(), "file.pdf"));
-                //        break;
-                //    }
-                //}
+                // Get results
+                IWebElement scanResult = driver.FindElement(By.XPath("//textarea[@id='file-qr-result']"));
+                wait.Until(ExpectedConditions.TextToBePresentInElement(scanResult, "BEGIN:VCALENDAR"));
+                string resultText = scanResult.GetAttribute("value");
+
+                using (new AssertionScope())
+                {
+                    resultText.Should().Contain($"SUMMARY:{title}");
+                    resultText.Should().Contain($"LOCATION:{location}");
+                    resultText.Should().Contain($"DESCRIPTION:{description}");
+                }
             }
         }
         
