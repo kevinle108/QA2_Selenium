@@ -6,6 +6,25 @@ using FluentAssertions;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
 using System.ComponentModel.Design;
+using OpenQA.Selenium.Interactions;
+using FluentAssertions.Execution;
+
+// Generate, then Read
+// https://4qrcode.com/ + https://4qrcode.com/scan-qr-code.php
+
+// QR Code Readers
+// https://qreader.online/
+// https://me-qr.com/
+// https://4qrcode.com/scan-qr-code.php                
+
+// Tooltip6
+// https://me-qr.com/ + https://me-qr-scanner.com/qr-scanner#scan-using-file
+
+
+// File Download
+// https://www.youtube.com/watch?v=w1QA5-rYELg
+// https://www.youtube.com/watch?v=_8fwyB0t5Ac
+
 
 namespace QA2_Selenium
 {
@@ -18,90 +37,15 @@ namespace QA2_Selenium
             this.output = output;
         }
 
+        // Used for exposing DateWidget html structure since inspecting in Chrome Dev Tools would cause the DateWidget to lose focus and disappear from the DOM tree
         public async Task DownloadPageSourceAsync(IWebDriver driver)
         {
             string pageSource = driver.PageSource;
             await File.WriteAllTextAsync("PageSource.html", pageSource);
         }
 
-        // click the event button to display the event qr generator
-        [Fact]
-        public void LoadEventSection()
-        {
-            using (IWebDriver driver = new ChromeDriver())
-            {
-                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
-
-                driver.Navigate().GoToUrl("https://4qrcode.com/");
-
-                var homePage = new PageModel(driver, wait);
-
-                homePage.EventButton.Click();
-
-                IWebElement eventHeader = homePage.EventHeader;
-
-                eventHeader.Displayed.Should().BeTrue();
-                
-
-                Thread.Sleep(2000);
-
-
-
-                //string title = driver.Title;
-                //IWebElement houseinfo = driver.FindElement(By.Id("house-info"));
-
-                //title.Should().Be("8110 Kellerman Rd, Louisville, KY 40219 | MLS# 1631002 | Redfin");
-                //houseinfo.Text.Should().Be("");
-                //title.Should().Be("Docs • Svelte");
-
-            }
-        }
         
-        [Fact]
-        public void ClickDatePicker()
-        {
-            using (IWebDriver driver = new ChromeDriver())
-            {
-                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
-                driver.Manage().Window.Maximize();
-                driver.Navigate().GoToUrl("https://4qrcode.com/");
-
-                var homePage = new PageModel(driver, wait);
-
-                homePage.EventButton.Click();
-
-                homePage.EventTitle.SendKeys("End of Class Party");
-                homePage.EventLocation.SendKeys("Online");
-                homePage.EventStartDateInput.SendKeys("March 31, 2023 1:00 PM");
-                homePage.EventEndDateInput.SendKeys("March 31, 2023 5:00 PM");
-                homePage.EventNotes.SendKeys("To celebrate completing the Code Louisville QA track!");
-                //bool canSave = homePage.EventSaveButton.Enabled;
-
-                IWebElement saveBtn =
-                    wait.Until(ExpectedConditions.ElementToBeClickable(homePage.EventSaveButton));
-
-                saveBtn.Click();
-
-                //WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(2));
-                //IWebElement datePickerWidget =
-                //    wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("div[@class='bootstrap-datetimepicker-widget dropdown-menu top'")));
-
-
-
-
-                Thread.Sleep(TimeSpan.FromSeconds(2));
-
-
-
-                //string title = driver.Title;
-                //IWebElement houseinfo = driver.FindElement(By.Id("house-info"));
-
-                //title.Should().Be("8110 Kellerman Rd, Louisville, KY 40219 | MLS# 1631002 | Redfin");
-                //houseinfo.Text.Should().Be("");
-                //title.Should().Be("Docs • Svelte");
-
-            }
-        }
+        
         
         [Fact]
         public void Show_DatePicker_Widget_Via_Javascript()
@@ -124,38 +68,12 @@ namespace QA2_Selenium
                 var columns = dateWidget.FindElements(By.TagName("td"));
                 Thread.Sleep(TimeSpan.FromSeconds(5));
                 return;
-                homePage.EventStartDateInput.SendKeys("March 31, 2023 1:00 PM");
-                homePage.EventEndDateInput.SendKeys("March 31, 2023 5:00 PM");
-                homePage.EventNotes.SendKeys("To celebrate completing the Code Louisville QA track!");
-                //bool canSave = homePage.EventSaveButton.Enabled;
-
-                IWebElement saveBtn =
-                    wait.Until(ExpectedConditions.ElementToBeClickable(homePage.EventSaveButton));
-
-                saveBtn.Click();
-
-                //WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(2));
-                //IWebElement datePickerWidget =
-                //    wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("div[@class='bootstrap-datetimepicker-widget dropdown-menu top'")));
-
-
-
-
-                Thread.Sleep(TimeSpan.FromSeconds(2));
-
-
-
-                //string title = driver.Title;
-                //IWebElement houseinfo = driver.FindElement(By.Id("house-info"));
-
-                //title.Should().Be("8110 Kellerman Rd, Louisville, KY 40219 | MLS# 1631002 | Redfin");
-                //houseinfo.Text.Should().Be("");
-                //title.Should().Be("Docs • Svelte");
 
             }
         }
+
         [Fact]
-        public async Task Generate_And_Download_Event_QR_Code()
+        public void Generate_And_Download_Event_QR_Code()
         {
             using (IWebDriver driver = new ChromeDriver())
             {
@@ -176,6 +94,41 @@ namespace QA2_Selenium
                 page.EventSavePngButton.Click();
 
                 Thread.Sleep(TimeSpan.FromSeconds(3));
+            }
+        }
+        
+        [Fact]
+        public void ToolTip_Should_Appear_On_Hover()
+        {
+            using (IWebDriver driver = new ChromeDriver())
+            {
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+                PageModel page = new PageModel(driver, new WebDriverWait(driver, TimeSpan.FromSeconds(5)));
+                
+                driver.Manage().Window.Maximize();
+                driver.Navigate().GoToUrl("https://4qrcode.com/");
+                page.EventButton.Click();
+                page.EventTitle.SendKeys("Pants Appreciation Month");
+                page.EventLocation.SendKeys("Everywhere");
+                page.EventStartDateInput.Click();
+                page.EventFirstDayOfMonth.Click();
+                page.EventEndDateInput.Click();
+                page.EventLastDayOfMonth.Click();                 
+                page.EventNotes.SendKeys("Celebrate pants all month long!");
+                page.EventSaveButton.Click();
+
+                // TODO: implement tooltip
+                // hover over to display tooltip
+                // Create an instance of the Actions class
+                Actions actions = new Actions(driver);
+                // Move the mouse pointer over the element to hover over
+                actions.MoveToElement(page.EventToolTip).Perform();
+                
+                using (new AssertionScope())
+                {
+                    page.EventToolTipText.Displayed.Should().BeTrue();
+                    page.EventToolTipText.Text.Should().Be("Copy URL");
+                }                
             }
         }
     }
