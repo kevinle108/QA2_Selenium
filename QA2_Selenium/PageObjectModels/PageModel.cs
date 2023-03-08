@@ -34,6 +34,11 @@ namespace QA_2_Browser_Testing.PageObjectModels
         public IWebElement EventNotes => Driver.FindElement(By.XPath("//label[text()='Notes']/following-sibling::textarea"));
         public IWebElement EventSaveButton => Wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//span[@id='preloadSave']//parent::button")));
         public IWebElement EventSavePngButton => Wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[contains(@class, 'linksholder')]//button[contains(@class, 'svgtopng')]")));
+        
+        public IWebElement EventPngName => Driver.FindElement(By.XPath("//div[contains(@class, 'linksholder')]//a[@class='serve-png d-none']"));
+
+        // <a class="serve-png d-none" href="qrcodes/f2ae613a5bef2817b89f1bb8fb579771.png" download="f2ae613a5bef2817b89f1bb8fb579771.png" data-path="qrcodes/f2ae613a5bef2817b89f1bb8fb579771">PNG</a>
+
         public IWebElement EventToolTip => Wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//span[@class='tooltip2']")));
         public IWebElement EventToolTipText => Wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//*[@id='myTooltip']")));
 

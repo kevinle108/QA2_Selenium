@@ -97,6 +97,59 @@ namespace QA2_Selenium
         }
         
         [Fact]
+        public void Generate_And_Download_Event_QR_Code_Custom_Folder()
+        {
+            // Set up the ChromeOptions to download the file to a specific folder
+            ChromeOptions options = new ChromeOptions();
+            string downloadDirectory = Path.Combine(Directory.GetCurrentDirectory(), "MyDownloads"); // Set custom download directory
+            Directory.CreateDirectory(downloadDirectory);
+            options.AddUserProfilePreference("download.default_directory", downloadDirectory);
+
+
+            using (IWebDriver driver = new ChromeDriver(options))
+            {
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+                PageModel page = new PageModel(driver, new WebDriverWait(driver, TimeSpan.FromSeconds(5)));
+                
+                driver.Manage().Window.Maximize();
+                driver.Navigate().GoToUrl("https://4qrcode.com/");
+                page.EventButton.Click();
+                page.EventTitle.SendKeys("Pants Appreciation Month");
+                page.EventLocation.SendKeys("Everywhere");
+                page.EventStartDateInput.Click();
+                page.EventFirstDayOfMonth.Click();
+                page.EventEndDateInput.Click();
+                page.EventLastDayOfMonth.Click();                 
+                page.EventNotes.SendKeys("Celebrate pants all month long!");
+                page.EventSaveButton.Click();
+
+
+                page.EventSavePngButton.Click();
+                Thread.Sleep(TimeSpan.FromSeconds(5));
+
+                var png = page.EventPngName;
+                string fileName = png.GetAttribute("download");
+                output.WriteLine(fileName);
+                output.WriteLine(Directory.GetCurrentDirectory());
+                var file = Directory.GetFiles(downloadDirectory, fileName)[0];
+
+                File.Move(file, Path.Combine(Directory.GetCurrentDirectory(), fileName));
+
+
+                // Move the downloaded file to the project folder
+                //string[] files = Directory.GetFiles(downloadDirectory);
+                //foreach (string file in files)
+                //{
+                //    if (file.EndsWith(".pdf")) // Check for the file extension
+                //    {
+                //        File.Move(file, Path.Combine(Directory.GetCurrentDirectory(), "file.pdf"));
+                //        break;
+                //    }
+                //}
+            }
+        }
+        
+        [Fact]
         public void ToolTip_Should_Appear_On_Hover()
         {
             using (IWebDriver driver = new ChromeDriver())
@@ -116,11 +169,7 @@ namespace QA2_Selenium
                 page.EventNotes.SendKeys("Celebrate pants all month long!");
                 page.EventSaveButton.Click();
 
-                // TODO: implement tooltip
-                // hover over to display tooltip
-                // Create an instance of the Actions class
                 Actions actions = new Actions(driver);
-                // Move the mouse pointer over the element to hover over
                 actions.MoveToElement(page.EventToolTip).Perform();
                 
                 using (new AssertionScope())
