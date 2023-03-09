@@ -172,6 +172,7 @@ namespace QA2_Selenium
                 // Get the result
                 string resultText = page.ScanResult.GetAttribute("value");
 
+                // Check the QR text for correct text information
                 using (new AssertionScope())
                 {
                     resultText.Should().Contain($"SUMMARY:{title}");
