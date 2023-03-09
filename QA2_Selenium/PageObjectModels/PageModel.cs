@@ -4,6 +4,7 @@ using SeleniumExtras.WaitHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,27 +21,42 @@ namespace QA_2_Browser_Testing.PageObjectModels
             Driver = driver;
             Wait = wait;
         }
-        
 
+        //div[@id='panel']//a[text()='QR Code scanner']
+        //public IWebElement ScannerLink => Driver.FindElement(By.XPath("//div[@id='panel']//a[text()='QR Code scanner']"));
         public IWebElement EventButton => Driver.FindElement(By.XPath("//span[text()='Event']/ancestor::a"));
         public IWebElement EventHeader => Driver.FindElement(By.XPath("//*[@id='event']/h2"));
-        public IWebElement EventTitle => Driver.FindElement(By.XPath("//label[text()='Event title']/following-sibling::input"));        
-        public IWebElement EventLocation => Driver.FindElement(By.XPath("//label[text()='Location']/following-sibling::input"));        
+        public IWebElement EventTitle => Driver.FindElement(By.XPath("//label[text()='Event title']/following-sibling::input"));
+        public IWebElement EventLocation => Driver.FindElement(By.XPath("//label[text()='Location']/following-sibling::input"));
         public IWebElement EventStartDateInput => Driver.FindElement(By.XPath("//*[@id='eventstart']"));
-        public IWebElement EventEndDateInput => Driver.FindElement(By.XPath("//*[@id='eventend']"));        
+        public IWebElement EventEndDateInput => Driver.FindElement(By.XPath("//*[@id='eventend']"));
         public IWebElement EventDateWidget => Wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[@class='bootstrap-datetimepicker-widget dropdown-menu top']")));
         public IWebElement EventFirstDayOfMonth => EventDateWidget.FindElement(By.XPath("//td[text()='1']"));
         public IWebElement EventLastDayOfMonth => GetLastDay();
         public IWebElement EventNotes => Driver.FindElement(By.XPath("//label[text()='Notes']/following-sibling::textarea"));
         public IWebElement EventSaveButton => Wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//span[@id='preloadSave']//parent::button")));
         public IWebElement EventSavePngButton => Wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[contains(@class, 'linksholder')]//button[contains(@class, 'svgtopng')]")));
-        
         public IWebElement EventPngName => Driver.FindElement(By.XPath("//div[contains(@class, 'linksholder')]//a[@class='serve-png d-none']"));
-
         public IWebElement EventToolTip => Wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//span[@class='tooltip2']")));
         public IWebElement EventToolTipText => Wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//*[@id='myTooltip']")));
+        public IWebElement ScannerLink => Wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("scan")));
 
-        public IWebElement ScannerLink => Driver.FindElement(By.XPath("//a[@id='scan']"));
+        public IWebElement CloseModalButton => Driver.FindElement(By.XPath("//div[@id='saveTool']//button[@aria-label='Close']"));
+
+        // TODO: MOVE SCANNER MODEL TO SEPARATE FILE
+
+        public IWebElement ScanResult => GetScanResult();
+        
+        private IWebElement GetScanResult()
+        {
+            IWebElement scanResult = Driver.FindElement(By.Id("file-qr-result"));
+            Wait.Until(ExpectedConditions.TextToBePresentInElementValue(scanResult, "BEGIN:VCALENDAR"));
+            return scanResult;
+        }
+
+
+
+        //public IWebElement CloseModalButton => Wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[@id='saveTool']//button[@aria-label='Close']")));
 
         // Returns the last day element of the current month. This prevents accidentally selecting the last day of the previous month if present in the date widget
         private IWebElement GetLastDay()

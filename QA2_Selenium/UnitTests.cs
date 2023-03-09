@@ -9,6 +9,8 @@ using System.ComponentModel.Design;
 using OpenQA.Selenium.Interactions;
 using FluentAssertions.Execution;
 
+// Project Requirements: https://docs.google.com/document/d/1YSXJaFg-Am6vQNyrQI8wuJMaX9g0VAs_f7byq2izn-I/edit
+
 // Generate, then Read
 // https://4qrcode.com/ + https://4qrcode.com/scan-qr-code.php
 
@@ -114,6 +116,16 @@ namespace QA2_Selenium
                 driver.Manage().Window.Maximize();
                 driver.Navigate().GoToUrl("https://4qrcode.com/");
 
+                // Opens Scanner in new tab
+                Actions openInNewTab = new Actions(driver);
+                openInNewTab
+                    .KeyDown(Keys.LeftControl)
+                    .Click(page.ScannerLink)
+                    .KeyUp(Keys.LeftControl)
+                    .Build()
+                    .Perform();
+                driver.SwitchTo().Window(driver.WindowHandles.First());
+
                 // Fill out Event form
                 string title = "Pants Appreciation Month";
                 string location = "Everywhere";
@@ -135,9 +147,7 @@ namespace QA2_Selenium
 
                 // Download QR code png file
                 page.EventSavePngButton.Click();
-                Thread.Sleep(TimeSpan.FromSeconds(5));
-
-
+                
                 // Get the file name and path for file upload
                 string fileName = page.EventPngName.GetAttribute("download");
                 string filePath = Path.Combine(downloadDirectory, fileName).Replace("\\", "\\\\");
@@ -146,20 +156,21 @@ namespace QA2_Selenium
                 output.WriteLine(filePath);
 
                 //////////////////////////////////////////////////////////////////////////////////////////////////////////
-                
+
                 // TODO: Refactor file upload code
                 // use anchor link instead of navigate
-                driver.Navigate().GoToUrl("https://4qrcode.com/scan-qr-code.php");
+                //driver.Navigate().GoToUrl("https://4qrcode.com/scan-qr-code.php");
+
+                Thread.Sleep(TimeSpan.FromSeconds(5));
+                driver.SwitchTo().Window(driver.WindowHandles.Last());
 
                 // Upload file
                 IWebElement fileUpload = driver.FindElement(By.XPath("//input[@id='file-selector']"));
                 fileUpload.SendKeys(filePath);
-                Thread.Sleep(TimeSpan.FromSeconds(3));
+                //Thread.Sleep(TimeSpan.FromSeconds(3));
 
-                // Get results
-                IWebElement scanResult = driver.FindElement(By.XPath("//textarea[@id='file-qr-result']"));
-                wait.Until(ExpectedConditions.TextToBePresentInElement(scanResult, "BEGIN:VCALENDAR"));
-                string resultText = scanResult.GetAttribute("value");
+                // Get the result
+                string resultText = page.ScanResult.GetAttribute("value");
 
                 using (new AssertionScope())
                 {
