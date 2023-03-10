@@ -8,6 +8,7 @@ using SeleniumExtras.WaitHelpers;
 using System.ComponentModel.Design;
 using OpenQA.Selenium.Interactions;
 using FluentAssertions.Execution;
+using QA2_Selenium.PageObjectModels;
 
 // Project Requirements: https://docs.google.com/document/d/1YSXJaFg-Am6vQNyrQI8wuJMaX9g0VAs_f7byq2izn-I/edit
 
@@ -160,17 +161,18 @@ namespace QA2_Selenium
                 // TODO: Refactor file upload code
                 // use anchor link instead of navigate
                 //driver.Navigate().GoToUrl("https://4qrcode.com/scan-qr-code.php");
+                var scanPage = new ScanPage(driver, wait);
 
                 Thread.Sleep(TimeSpan.FromSeconds(5));
                 driver.SwitchTo().Window(driver.WindowHandles.Last());
 
                 // Upload file
                 IWebElement fileUpload = driver.FindElement(By.XPath("//input[@id='file-selector']"));
-                fileUpload.SendKeys(filePath);
+                scanPage.FileUpload.SendKeys(filePath);
                 //Thread.Sleep(TimeSpan.FromSeconds(3));
 
                 // Get the result
-                string resultText = page.ScanResult.GetAttribute("value");
+                string resultText = scanPage.ScanResult.GetAttribute("value");
 
                 // Check the QR text for correct text information
                 using (new AssertionScope())

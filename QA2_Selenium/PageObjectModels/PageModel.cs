@@ -45,14 +45,7 @@ namespace QA_2_Browser_Testing.PageObjectModels
 
         // TODO: MOVE SCANNER MODEL TO SEPARATE FILE
 
-        public IWebElement ScanResult => GetScanResult();
         
-        private IWebElement GetScanResult()
-        {
-            IWebElement scanResult = Driver.FindElement(By.Id("file-qr-result"));
-            Wait.Until(ExpectedConditions.TextToBePresentInElementValue(scanResult, "BEGIN:VCALENDAR"));
-            return scanResult;
-        }
 
 
 
