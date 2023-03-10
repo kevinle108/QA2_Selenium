@@ -32,72 +32,143 @@ namespace QA2_Selenium
 {
     public class UnitTests
     {
-        private readonly ITestOutputHelper output;
+        ITestOutputHelper output;
+        string homeUrl = "https://4qrcode.com/";
+        string scanUrl = "https://4qrcode.com/scan-qr-code.php";
+        string eventTitle = "Pants Appreciation Month";
+        string eventLocation = "Everywhere";
+        string eventDescription = "Celebrate pants all month long!";
+        string sampleFileName = "sample.png";
 
         public UnitTests(ITestOutputHelper output)
         {
             this.output = output;
         }
 
-        // Used for exposing DateWidget html structure since inspecting in Chrome Dev Tools would cause the DateWidget to lose focus and disappear from the DOM tree
-        public async Task DownloadPageSourceAsync(IWebDriver driver)
+
+       [Fact]
+        public void File_Uploads_Successfully()
         {
-            string pageSource = driver.PageSource;
-            await File.WriteAllTextAsync("PageSource.html", pageSource);
+            using IWebDriver driver = new ChromeDriver();
+            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+            driver.Manage().Window.Maximize();
+            driver.Navigate().GoToUrl(scanUrl);
+            ScanPage scanPage = new ScanPage(driver, wait);
+
+            // Get the file name and path for file upload
+            string filePath = Path.Combine(Directory.GetCurrentDirectory(), sampleFileName);
+            output.WriteLine(Directory.GetCurrentDirectory());
+            output.WriteLine(filePath);
+
+            scanPage.FileUpload.SendKeys(filePath);
+            string resultFileName = scanPage.FileName.Text;
+            string resultText = scanPage.ScanResult.GetAttribute("value");
+
+            // Check the QR text for correct text information
+            using (new AssertionScope())
+            {
+                resultFileName.Should().Be(sampleFileName);
+                resultText.Should().Contain("BEGIN:VCALENDAR");
+            }
+
         }
 
-        
-        
-        
         [Fact]
-        public void Show_DatePicker_Widget_Via_Javascript()
+        public void Date_Picker_Widget_Input()
         {
-            using (IWebDriver driver = new ChromeDriver())
+            using IWebDriver driver = new ChromeDriver();
+            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+            driver.Manage().Window.Maximize();
+            driver.Navigate().GoToUrl(homeUrl);
+            HomePage homePage = new HomePage(driver, wait);
+            homePage.EventButton.Click();
+            homePage.EventStartDateInput.Click();
+            homePage.EventFirstDayOfMonth.Click();
+            string dateText = homePage.EventStartDateInput.GetAttribute("value");
+            output.WriteLine(dateText);
+            dateText.Should().Contain(" 1, ");
+        }
+
+        [Fact]
+        public void Tooltip_Appears_On_Hover()
+        {
+            using IWebDriver driver = new ChromeDriver();
+            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+            driver.Manage().Window.Maximize();
+            driver.Navigate().GoToUrl(homeUrl);
+            HomePage homePage = new HomePage(driver, wait);
+
+            // Scrolls page to better view tooltip
+            ((IJavaScriptExecutor)driver).ExecuteScript("window.scrollTo(0, document.body.scrollHeight)");
+
+            homePage.UrlTextInput.SendKeys("https://www.dictionary.com/browse/pants");
+            homePage.EventSaveButton.Click();
+
+            var tooltip = homePage.EventToolTip;
+            Actions actions = new Actions(driver);
+
+            actions.MoveToElement(homePage.EventToolTip).Perform();
+
+
+            using (new AssertionScope())
             {
-                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
-                driver.Manage().Window.Maximize();
-                driver.Navigate().GoToUrl("https://4qrcode.com/");
-
-                var homePage = new PageModel(driver, wait);
-
-                homePage.EventButton.Click();
-
-                IWebElement startDatePicker = homePage.EventStartDateInput;
-                String javascript = "arguments[0].click()";
-                IJavaScriptExecutor jse = (IJavaScriptExecutor)driver;
-                jse.ExecuteScript(javascript, startDatePicker);
-                IWebElement dateWidget = driver.FindElement(By.XPath("//div[@class='bootstrap-datetimepicker-widget dropdown-menu top']"));
-                var columns = dateWidget.FindElements(By.TagName("td"));
-                Thread.Sleep(TimeSpan.FromSeconds(5));
-                return;
-
+                homePage.EventToolTipText.Displayed.Should().BeTrue();
+                homePage.EventToolTipText.Text.Should().Be("Copy URL");
             }
         }
 
-        [Fact]
-        public void Generate_And_Download_Event_QR_Code()
-        {
-            using (IWebDriver driver = new ChromeDriver())
-            {
-                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
-                PageModel page = new PageModel(driver, new WebDriverWait(driver, TimeSpan.FromSeconds(5)));
+
+
+
+        //[Fact]
+        //public void Show_DatePicker_Widget_Via_Javascript()
+        //{
+        //    using (IWebDriver driver = new ChromeDriver())
+        //    {
+        //        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+        //        driver.Manage().Window.Maximize();
+        //        driver.Navigate().GoToUrl(homeUrl);
+
+        //        var homePage = new HomePage(driver, wait);
+
+        //        homePage.EventButton.Click();
+
+        //        IWebElement startDatePicker = homePage.EventStartDateInput;
+        //        String javascript = "arguments[0].click()";
+        //        IJavaScriptExecutor jse = (IJavaScriptExecutor)driver;
+        //        jse.ExecuteScript(javascript, startDatePicker);
+        //        IWebElement dateWidget = driver.FindElement(By.XPath("//div[@class='bootstrap-datetimepicker-widget dropdown-menu top']"));
+        //        var columns = dateWidget.FindElements(By.TagName("td"));
+        //        Thread.Sleep(TimeSpan.FromSeconds(5));
+        //        return;
+
+        //    }
+        //}
+
+        //[Fact]
+        //public void Generate_And_Download_Event_QR_Code()
+        //{
+        //    using (IWebDriver driver = new ChromeDriver())
+        //    {
+        //        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+        //        HomePage homePage = new HomePage(driver, new WebDriverWait(driver, TimeSpan.FromSeconds(5)));
                 
-                driver.Manage().Window.Maximize();
-                driver.Navigate().GoToUrl("https://4qrcode.com/");
-                page.EventButton.Click();
-                page.EventTitle.SendKeys("Pants Appreciation Month");
-                page.EventLocation.SendKeys("Everywhere");
-                page.EventStartDateInput.Click();
-                page.EventFirstDayOfMonth.Click();
-                page.EventEndDateInput.Click();
-                page.EventLastDayOfMonth.Click();                 
-                page.EventNotes.SendKeys("Celebrate pants all month long!");
-                page.EventSaveButton.Click();
-                page.EventSavePngButton.Click();
+        //        driver.Manage().Window.Maximize();
+        //        driver.Navigate().GoToUrl(homeUrl);
+        //        homePage.EventButton.Click();
+        //        homePage.EventTitle.SendKeys("Pants Appreciation Month");
+        //        homePage.EventLocation.SendKeys("Everywhere");
+        //        homePage.EventStartDateInput.Click();
+        //        homePage.EventFirstDayOfMonth.Click();
+        //        homePage.EventEndDateInput.Click();
+        //        homePage.EventLastDayOfMonth.Click();                 
+        //        homePage.EventNotes.SendKeys("Celebrate pants all month long!");
+        //        homePage.EventSaveButton.Click();
+        //        homePage.EventSavePngButton.Click();
 
-                Thread.Sleep(TimeSpan.FromSeconds(3));
-            }
-        }
+        //        Thread.Sleep(TimeSpan.FromSeconds(3));
+        //    }
+        //}
         
         [Fact]
         public void Generate_And_Download_Event_QR_Code_Custom_Folder()
@@ -112,45 +183,43 @@ namespace QA2_Selenium
             using (IWebDriver driver = new ChromeDriver(options))
             {
                 WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
-                PageModel page = new PageModel(driver, new WebDriverWait(driver, TimeSpan.FromSeconds(5)));
+                HomePage homePage = new HomePage(driver, new WebDriverWait(driver, TimeSpan.FromSeconds(5)));
                 
                 driver.Manage().Window.Maximize();
-                driver.Navigate().GoToUrl("https://4qrcode.com/");
+                driver.Navigate().GoToUrl(homeUrl);
 
                 // Opens Scanner in new tab
                 Actions openInNewTab = new Actions(driver);
                 openInNewTab
                     .KeyDown(Keys.LeftControl)
-                    .Click(page.ScannerLink)
+                    .Click(homePage.ScannerLink)
                     .KeyUp(Keys.LeftControl)
                     .Build()
                     .Perform();
                 driver.SwitchTo().Window(driver.WindowHandles.First());
 
                 // Fill out Event form
-                string title = "Pants Appreciation Month";
-                string location = "Everywhere";
-                string description = "Celebrate pants all month long!";
+                
 
-                page.EventButton.Click();
-                page.EventTitle.SendKeys(title);
-                page.EventLocation.SendKeys(location);
-                page.EventStartDateInput.Click();
-                page.EventFirstDayOfMonth.Click();
-                page.EventEndDateInput.Click();
-                page.EventLastDayOfMonth.Click();                 
-                page.EventNotes.SendKeys(description);
-                page.EventSaveButton.Click();
+                homePage.EventButton.Click();
+                homePage.EventTitle.SendKeys(eventTitle);
+                homePage.EventLocation.SendKeys(eventLocation);
+                homePage.EventStartDateInput.Click();
+                homePage.EventFirstDayOfMonth.Click();
+                homePage.EventEndDateInput.Click();
+                homePage.EventLastDayOfMonth.Click();                 
+                homePage.EventNotes.SendKeys(eventDescription);
+                homePage.EventSaveButton.Click();
 
                 // Optional: Show tooltip
                 Actions actions = new Actions(driver);
-                actions.MoveToElement(page.EventToolTip).Perform();
+                actions.MoveToElement(homePage.EventToolTip).Perform();
 
                 // Download QR code png file
-                page.EventSavePngButton.Click();
+                homePage.EventSavePngButton.Click();
                 
                 // Get the file name and path for file upload
-                string fileName = page.EventPngName.GetAttribute("download");
+                string fileName = homePage.EventPngName.GetAttribute("download");
                 string filePath = Path.Combine(downloadDirectory, fileName).Replace("\\", "\\\\");
                 output.WriteLine(fileName);
                 output.WriteLine(Directory.GetCurrentDirectory());
@@ -167,9 +236,7 @@ namespace QA2_Selenium
                 driver.SwitchTo().Window(driver.WindowHandles.Last());
 
                 // Upload file
-                IWebElement fileUpload = driver.FindElement(By.XPath("//input[@id='file-selector']"));
                 scanPage.FileUpload.SendKeys(filePath);
-                //Thread.Sleep(TimeSpan.FromSeconds(3));
 
                 // Get the result
                 string resultText = scanPage.ScanResult.GetAttribute("value");
@@ -177,42 +244,43 @@ namespace QA2_Selenium
                 // Check the QR text for correct text information
                 using (new AssertionScope())
                 {
-                    resultText.Should().Contain($"SUMMARY:{title}");
-                    resultText.Should().Contain($"LOCATION:{location}");
-                    resultText.Should().Contain($"DESCRIPTION:{description}");
+                    resultText.Should().Contain($"SUMMARY:{eventTitle}");
+                    resultText.Should().Contain($"LOCATION:{eventLocation}");
+                    resultText.Should().Contain($"DESCRIPTION:{eventDescription}");
                 }
             }
         }
         
-        [Fact]
-        public void ToolTip_Should_Appear_On_Hover()
-        {
-            using (IWebDriver driver = new ChromeDriver())
-            {
-                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
-                PageModel page = new PageModel(driver, new WebDriverWait(driver, TimeSpan.FromSeconds(5)));
+        // TODO: remove old tooltip test
+        //[Fact]
+        //public void ToolTip_Should_Appear_On_Hover()
+        //{
+        //    using (IWebDriver driver = new ChromeDriver())
+        //    {
+        //        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+        //        HomePage homePage = new HomePage(driver, new WebDriverWait(driver, TimeSpan.FromSeconds(5)));
                 
-                driver.Manage().Window.Maximize();
-                driver.Navigate().GoToUrl("https://4qrcode.com/");
-                page.EventButton.Click();
-                page.EventTitle.SendKeys("Pants Appreciation Month");
-                page.EventLocation.SendKeys("Everywhere");
-                page.EventStartDateInput.Click();
-                page.EventFirstDayOfMonth.Click();
-                page.EventEndDateInput.Click();
-                page.EventLastDayOfMonth.Click();                 
-                page.EventNotes.SendKeys("Celebrate pants all month long!");
-                page.EventSaveButton.Click();
+        //        driver.Manage().Window.Maximize();
+        //        driver.Navigate().GoToUrl(homeUrl);
+        //        homePage.EventButton.Click();
+        //        homePage.EventTitle.SendKeys("Pants Appreciation Month");
+        //        homePage.EventLocation.SendKeys("Everywhere");
+        //        homePage.EventStartDateInput.Click();
+        //        homePage.EventFirstDayOfMonth.Click();
+        //        homePage.EventEndDateInput.Click();
+        //        homePage.EventLastDayOfMonth.Click();                 
+        //        homePage.EventNotes.SendKeys("Celebrate pants all month long!");
+        //        homePage.EventSaveButton.Click();
 
-                Actions actions = new Actions(driver);
-                actions.MoveToElement(page.EventToolTip).Perform();
+        //        Actions actions = new Actions(driver);
+        //        actions.MoveToElement(homePage.EventToolTip).Perform();
                 
-                using (new AssertionScope())
-                {
-                    page.EventToolTipText.Displayed.Should().BeTrue();
-                    page.EventToolTipText.Text.Should().Be("Copy URL");
-                }                
-            }
-        }
+        //        using (new AssertionScope())
+        //        {
+        //            homePage.EventToolTipText.Displayed.Should().BeTrue();
+        //            homePage.EventToolTipText.Text.Should().Be("Copy URL");
+        //        }                
+        //    }
+        //}
     }
 }

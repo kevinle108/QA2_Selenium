@@ -1,29 +1,35 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using QA2_Selenium.PageObjectModels;
 using SeleniumExtras.WaitHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace QA_2_Browser_Testing.PageObjectModels
 {
-    internal class PageModel
+    internal class HomePage
     {
         private readonly IWebDriver Driver;
 
         private readonly WebDriverWait Wait;
 
-        public PageModel(IWebDriver driver, WebDriverWait wait)
+        public HomePage(IWebDriver driver, WebDriverWait wait)
         {
             Driver = driver;
             Wait = wait;
         }
 
-        //div[@id='panel']//a[text()='QR Code scanner']
-        //public IWebElement ScannerLink => Driver.FindElement(By.XPath("//div[@id='panel']//a[text()='QR Code scanner']"));
+
+
+        
+        public IWebElement UrlTextInput => Driver.FindElement(By.Id("malink"));
+        public IWebElement ScannerLink => Wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("scan")));
+        public IWebElement Modal => Wait.Until(ExpectedConditions.ElementIsVisible(By.Id("saveTool")));        
         public IWebElement EventButton => Driver.FindElement(By.XPath("//span[text()='Event']/ancestor::a"));
         public IWebElement EventHeader => Driver.FindElement(By.XPath("//*[@id='event']/h2"));
         public IWebElement EventTitle => Driver.FindElement(By.XPath("//label[text()='Event title']/following-sibling::input"));
@@ -39,17 +45,11 @@ namespace QA_2_Browser_Testing.PageObjectModels
         public IWebElement EventPngName => Driver.FindElement(By.XPath("//div[contains(@class, 'linksholder')]//a[@class='serve-png d-none']"));
         public IWebElement EventToolTip => Wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//span[@class='tooltip2']")));
         public IWebElement EventToolTipText => Wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//*[@id='myTooltip']")));
-        public IWebElement ScannerLink => Wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("scan")));
-
         public IWebElement CloseModalButton => Driver.FindElement(By.XPath("//div[@id='saveTool']//button[@aria-label='Close']"));
 
-        // TODO: MOVE SCANNER MODEL TO SEPARATE FILE
-
-        
-
-
-
-        //public IWebElement CloseModalButton => Wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[@id='saveTool']//button[@aria-label='Close']")));
+        // TODO: Close Pop-Up Add Modal after download
+        // public IWebElement CloseModalButton => Wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[@id='saveTool']//button[@aria-label='Close']")));
+        // public IWebElement CloseModalButton => Driver.FindElement(By.XPath("//div[@id='saveTool']//button[@aria-label='Close']"));
 
         // Returns the last day element of the current month. This prevents accidentally selecting the last day of the previous month if present in the date widget
         private IWebElement GetLastDay()
@@ -57,6 +57,13 @@ namespace QA_2_Browser_Testing.PageObjectModels
             int lastDayOfMonth = DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month);
             var dayOptions = EventDateWidget.FindElements(By.XPath($"//td[text()='{lastDayOfMonth}']"));
             return dayOptions[dayOptions.Count - 1];
+        }
+
+        // Used for exposing DateWidget html structure since inspecting in Chrome Dev Tools would cause the DateWidget to lose focus and disappear from the DOM tree
+        public async Task DownloadPageSourceAsync()
+        {
+            string pageSource = Driver.PageSource;
+            await File.WriteAllTextAsync("PageSource.html", pageSource);
         }
     }
 }
