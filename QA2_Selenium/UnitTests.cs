@@ -32,13 +32,12 @@ namespace QA2_Selenium
 {
     public class UnitTests
     {
-        ITestOutputHelper output;
-        string homeUrl = "https://4qrcode.com/";
-        string scanUrl = "https://4qrcode.com/scan-qr-code.php";
-        string eventTitle = "Pants Appreciation Month";
-        string eventLocation = "Everywhere";
-        string eventDescription = "Celebrate pants all month long!";
-        string sampleFileName = "sample.png";
+        readonly ITestOutputHelper output;
+
+        readonly string eventTitle = "Pants Appreciation Month";
+        readonly string eventLocation = "Everywhere";
+        readonly string eventDescription = "Celebrate pants all month long!";
+        readonly string sampleFileName = "sample.png";
 
         public UnitTests(ITestOutputHelper output)
         {
@@ -49,11 +48,9 @@ namespace QA2_Selenium
        [Fact]
         public void File_Uploads_Successfully()
         {
-            using IWebDriver driver = new ChromeDriver();
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
-            driver.Manage().Window.Maximize();
-            driver.Navigate().GoToUrl(scanUrl);
-            ScanPage scanPage = new ScanPage(driver, wait);
+            using IWebDriver driver = new ChromeDriver();            
+            ScanPage scanPage = new ScanPage(driver);
+            driver.Navigate().GoToUrl(scanPage.Url);
 
             // Get the file name and path for file upload
             string filePath = Path.Combine(Directory.GetCurrentDirectory(), sampleFileName);
@@ -77,15 +74,12 @@ namespace QA2_Selenium
         public void Date_Picker_Widget_Input()
         {
             using IWebDriver driver = new ChromeDriver();
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
-            driver.Manage().Window.Maximize();
-            driver.Navigate().GoToUrl(homeUrl);
-            HomePage homePage = new HomePage(driver, wait);
+            HomePage homePage = new HomePage(driver);
             homePage.EventButton.Click();
             homePage.EventStartDateInput.Click();
             homePage.EventFirstDayOfMonth.Click();
             string dateText = homePage.EventStartDateInput.GetAttribute("value");
-            output.WriteLine(dateText);
+
             dateText.Should().Contain(" 1, ");
         }
 
@@ -93,10 +87,7 @@ namespace QA2_Selenium
         public void Tooltip_Appears_On_Hover()
         {
             using IWebDriver driver = new ChromeDriver();
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
-            driver.Manage().Window.Maximize();
-            driver.Navigate().GoToUrl(homeUrl);
-            HomePage homePage = new HomePage(driver, wait);
+            HomePage homePage = new HomePage(driver);
 
             // Scrolls page to better view tooltip
             ((IJavaScriptExecutor)driver).ExecuteScript("window.scrollTo(0, document.body.scrollHeight)");
@@ -106,15 +97,25 @@ namespace QA2_Selenium
 
             var tooltip = homePage.EventToolTip;
             Actions actions = new Actions(driver);
-
             actions.MoveToElement(homePage.EventToolTip).Perform();
-
 
             using (new AssertionScope())
             {
                 homePage.EventToolTipText.Displayed.Should().BeTrue();
                 homePage.EventToolTipText.Text.Should().Be("Copy URL");
             }
+        }
+        
+        [Fact]
+        public void Negative_Test_Incomplete_Event()
+        {
+            using IWebDriver driver = new ChromeDriver();
+            HomePage homePage = new HomePage(driver);
+
+            homePage.EventButton.Click();
+            homePage.EventTitle.SendKeys(eventTitle);
+            
+            homePage.Alert.Text.Should().Be("Please provide more data");                       
         }
 
 
@@ -179,75 +180,60 @@ namespace QA2_Selenium
             Directory.CreateDirectory(downloadDirectory);
             options.AddUserProfilePreference("download.default_directory", downloadDirectory);
 
+            using IWebDriver driver = new ChromeDriver(options);
+            HomePage homePage = new HomePage(driver);
 
-            using (IWebDriver driver = new ChromeDriver(options))
+            // Opens Scanner in new tab
+            Actions openInNewTab = new Actions(driver);
+            openInNewTab
+                .KeyDown(Keys.LeftControl)
+                .Click(homePage.ScannerLink)
+                .KeyUp(Keys.LeftControl)
+                .Build()
+                .Perform();
+            driver.SwitchTo().Window(driver.WindowHandles.First());
+
+            // Fill out Event form                
+            homePage.EventButton.Click();
+            homePage.EventTitle.SendKeys(eventTitle);
+            homePage.EventLocation.SendKeys(eventLocation);
+            homePage.EventStartDateInput.Click();
+            homePage.EventFirstDayOfMonth.Click();
+            homePage.EventEndDateInput.Click();
+            homePage.EventLastDayOfMonth.Click();
+            homePage.EventNotes.SendKeys(eventDescription);
+            homePage.EventSaveButton.Click();
+
+            // Optional: Show tooltip
+            Actions actions = new Actions(driver);
+            actions.MoveToElement(homePage.EventToolTip).Perform();
+
+            // Download QR code png file
+            homePage.EventSavePngButton.Click();
+            Thread.Sleep(TimeSpan.FromSeconds(3));
+
+            // Get the file name and path for file upload
+            string fileName = homePage.EventPngName.GetAttribute("download");
+            string filePath = Path.Combine(downloadDirectory, fileName);
+            output.WriteLine(fileName);
+            output.WriteLine(Directory.GetCurrentDirectory());
+            output.WriteLine(filePath);
+
+            var scanPage = new ScanPage(driver);
+            driver.SwitchTo().Window(driver.WindowHandles.Last());
+
+            // Upload file
+            scanPage.FileUpload.SendKeys(filePath);
+
+            // Get the result
+            string resultText = scanPage.ScanResult.GetAttribute("value");
+
+            // Check the QR text for correct text information
+            using (new AssertionScope())
             {
-                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
-                HomePage homePage = new HomePage(driver, new WebDriverWait(driver, TimeSpan.FromSeconds(5)));
-                
-                driver.Manage().Window.Maximize();
-                driver.Navigate().GoToUrl(homeUrl);
-
-                // Opens Scanner in new tab
-                Actions openInNewTab = new Actions(driver);
-                openInNewTab
-                    .KeyDown(Keys.LeftControl)
-                    .Click(homePage.ScannerLink)
-                    .KeyUp(Keys.LeftControl)
-                    .Build()
-                    .Perform();
-                driver.SwitchTo().Window(driver.WindowHandles.First());
-
-                // Fill out Event form
-                
-
-                homePage.EventButton.Click();
-                homePage.EventTitle.SendKeys(eventTitle);
-                homePage.EventLocation.SendKeys(eventLocation);
-                homePage.EventStartDateInput.Click();
-                homePage.EventFirstDayOfMonth.Click();
-                homePage.EventEndDateInput.Click();
-                homePage.EventLastDayOfMonth.Click();                 
-                homePage.EventNotes.SendKeys(eventDescription);
-                homePage.EventSaveButton.Click();
-
-                // Optional: Show tooltip
-                Actions actions = new Actions(driver);
-                actions.MoveToElement(homePage.EventToolTip).Perform();
-
-                // Download QR code png file
-                homePage.EventSavePngButton.Click();
-                
-                // Get the file name and path for file upload
-                string fileName = homePage.EventPngName.GetAttribute("download");
-                string filePath = Path.Combine(downloadDirectory, fileName).Replace("\\", "\\\\");
-                output.WriteLine(fileName);
-                output.WriteLine(Directory.GetCurrentDirectory());
-                output.WriteLine(filePath);
-
-                //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-                // TODO: Refactor file upload code
-                // use anchor link instead of navigate
-                //driver.Navigate().GoToUrl("https://4qrcode.com/scan-qr-code.php");
-                var scanPage = new ScanPage(driver, wait);
-
-                Thread.Sleep(TimeSpan.FromSeconds(5));
-                driver.SwitchTo().Window(driver.WindowHandles.Last());
-
-                // Upload file
-                scanPage.FileUpload.SendKeys(filePath);
-
-                // Get the result
-                string resultText = scanPage.ScanResult.GetAttribute("value");
-
-                // Check the QR text for correct text information
-                using (new AssertionScope())
-                {
-                    resultText.Should().Contain($"SUMMARY:{eventTitle}");
-                    resultText.Should().Contain($"LOCATION:{eventLocation}");
-                    resultText.Should().Contain($"DESCRIPTION:{eventDescription}");
-                }
+                resultText.Should().Contain($"SUMMARY:{eventTitle}");
+                resultText.Should().Contain($"LOCATION:{eventLocation}");
+                resultText.Should().Contain($"DESCRIPTION:{eventDescription}");
             }
         }
         

@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using QA2_Selenium.PageObjectModels;
 using SeleniumExtras.WaitHelpers;
@@ -14,42 +15,53 @@ namespace QA_2_Browser_Testing.PageObjectModels
 {
     internal class HomePage
     {
-        private readonly IWebDriver Driver;
+        IWebDriver _driver;
+        WebDriverWait _wait;
+        public string Url = "https://4qrcode.com/";
 
-        private readonly WebDriverWait Wait;
 
-        public HomePage(IWebDriver driver, WebDriverWait wait)
+        public HomePage(IWebDriver driver)
         {
-            Driver = driver;
-            Wait = wait;
+            _driver = driver;
+            _wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+            _driver.Manage().Window.Maximize();
+            _driver.Navigate().GoToUrl(Url);
+            EnsurePageLoad();
         }
 
 
 
-        
-        public IWebElement UrlTextInput => Driver.FindElement(By.Id("malink"));
-        public IWebElement ScannerLink => Wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("scan")));
-        public IWebElement Modal => Wait.Until(ExpectedConditions.ElementIsVisible(By.Id("saveTool")));        
-        public IWebElement EventButton => Driver.FindElement(By.XPath("//span[text()='Event']/ancestor::a"));
-        public IWebElement EventHeader => Driver.FindElement(By.XPath("//*[@id='event']/h2"));
-        public IWebElement EventTitle => Driver.FindElement(By.XPath("//label[text()='Event title']/following-sibling::input"));
-        public IWebElement EventLocation => Driver.FindElement(By.XPath("//label[text()='Location']/following-sibling::input"));
-        public IWebElement EventStartDateInput => Driver.FindElement(By.XPath("//*[@id='eventstart']"));
-        public IWebElement EventEndDateInput => Driver.FindElement(By.XPath("//*[@id='eventend']"));
-        public IWebElement EventDateWidget => Wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[@class='bootstrap-datetimepicker-widget dropdown-menu top']")));
+
+        public IWebElement UrlTextInput => _driver.FindElement(By.Id("malink"));
+        public IWebElement ScannerLink => _wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("scan")));
+        public IWebElement EventButton => _driver.FindElement(By.XPath("//span[text()='Event']/ancestor::a"));
+        public IWebElement PhoneButton => _driver.FindElement(By.XPath("//a[@href='#phone']"));
+        public IWebElement EventHeader => _driver.FindElement(By.XPath("//*[@id='event']/h2"));
+        public IWebElement EventTitle => _driver.FindElement(By.XPath("//label[text()='Event title']/following-sibling::input"));
+        public IWebElement EventLocation => _driver.FindElement(By.XPath("//label[text()='Location']/following-sibling::input"));
+        public IWebElement EventStartDateInput => _driver.FindElement(By.XPath("//*[@id='eventstart']"));
+        public IWebElement EventEndDateInput => _driver.FindElement(By.XPath("//*[@id='eventend']"));
+        public IWebElement EventDateWidget => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[@class='bootstrap-datetimepicker-widget dropdown-menu top']")));
         public IWebElement EventFirstDayOfMonth => EventDateWidget.FindElement(By.XPath("//td[text()='1']"));
         public IWebElement EventLastDayOfMonth => GetLastDay();
-        public IWebElement EventNotes => Driver.FindElement(By.XPath("//label[text()='Notes']/following-sibling::textarea"));
-        public IWebElement EventSaveButton => Wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//span[@id='preloadSave']//parent::button")));
-        public IWebElement EventSavePngButton => Wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[contains(@class, 'linksholder')]//button[contains(@class, 'svgtopng')]")));
-        public IWebElement EventPngName => Driver.FindElement(By.XPath("//div[contains(@class, 'linksholder')]//a[@class='serve-png d-none']"));
-        public IWebElement EventToolTip => Wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//span[@class='tooltip2']")));
-        public IWebElement EventToolTipText => Wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//*[@id='myTooltip']")));
-        public IWebElement CloseModalButton => Driver.FindElement(By.XPath("//div[@id='saveTool']//button[@aria-label='Close']"));
+        public IWebElement EventNotes => _driver.FindElement(By.XPath("//label[text()='Notes']/following-sibling::textarea"));
+        public IWebElement EventSaveButton => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//span[@id='preloadSave']//parent::button")));
+        public IWebElement EventSavePngButton => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[contains(@class, 'linksholder')]//button[contains(@class, 'svgtopng')]")));
+        public IWebElement EventPngName => _driver.FindElement(By.XPath("//div[contains(@class, 'linksholder')]//a[@class='serve-png d-none']"));
+        public IWebElement EventToolTip => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//span[@class='tooltip2']")));
+        public IWebElement EventToolTipText => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//*[@id='myTooltip']")));
+        public IWebElement Modal => _wait.Until(ExpectedConditions.ElementIsVisible(By.Id("saveTool")));
+        public IWebElement CloseModalButton => _driver.FindElement(By.XPath("//div[@id='saveTool']//button[@aria-label='Close']"));
+        public IWebElement Alert => _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//div[@role='alert']//div[contains(@class, 'toast-body')]")));
 
         // TODO: Close Pop-Up Add Modal after download
         // public IWebElement CloseModalButton => Wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[@id='saveTool']//button[@aria-label='Close']")));
         // public IWebElement CloseModalButton => Driver.FindElement(By.XPath("//div[@id='saveTool']//button[@aria-label='Close']"));
+
+        public void EnsurePageLoad()
+        {
+            _wait.Until(ExpectedConditions.ElementExists(By.Id("saveTool")));
+        }
 
         // Returns the last day element of the current month. This prevents accidentally selecting the last day of the previous month if present in the date widget
         private IWebElement GetLastDay()
@@ -62,7 +74,7 @@ namespace QA_2_Browser_Testing.PageObjectModels
         // Used for exposing DateWidget html structure since inspecting in Chrome Dev Tools would cause the DateWidget to lose focus and disappear from the DOM tree
         public async Task DownloadPageSourceAsync()
         {
-            string pageSource = Driver.PageSource;
+            string pageSource = _driver.PageSource;
             await File.WriteAllTextAsync("PageSource.html", pageSource);
         }
     }

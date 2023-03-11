@@ -13,19 +13,19 @@ namespace QA2_Selenium.PageObjectModels
 {
     internal class ScanPage
     {
-        private readonly IWebDriver Driver;
+        readonly IWebDriver _driver;
+        readonly WebDriverWait _wait;
+        public string Url = "https://4qrcode.com/scan-qr-code.php";
 
-        private readonly WebDriverWait Wait;
-
-
-        public ScanPage(IWebDriver driver, WebDriverWait wait)
+        public ScanPage(IWebDriver driver)
         {
-            Driver = driver;
-            Wait = wait;
+            _driver = driver;
+            _wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+            _driver.Manage().Window.Maximize();
         }
 
 
-        public IWebElement FileUpload => Driver.FindElement(By.XPath("//input[@id='file-selector']"));
+        public IWebElement FileUpload => _driver.FindElement(By.XPath("//input[@id='file-selector']"));
 
         // Explict wait for a matching partial text to appear in the name element
         public IWebElement FileName
@@ -33,8 +33,8 @@ namespace QA2_Selenium.PageObjectModels
             get
             {                  
                 //CheckModal();
-                Wait.Until(ExpectedConditions.TextToBePresentInElement(Driver.FindElement(By.Id("js-file-name")), "."));
-                return Driver.FindElement(By.Id("js-file-name"));
+                _wait.Until(ExpectedConditions.TextToBePresentInElement(_driver.FindElement(By.Id("js-file-name")), "."));
+                return _driver.FindElement(By.Id("js-file-name"));
             }
         }
 
@@ -44,27 +44,33 @@ namespace QA2_Selenium.PageObjectModels
             get
             {
                 //CheckModal();
-                IWebElement scanResult = Driver.FindElement(By.Id("file-qr-result"));
-                Wait.Until(
+                IWebElement scanResult = _driver.FindElement(By.Id("file-qr-result"));
+                _wait.Until(
                     ExpectedConditions
                     .TextToBePresentInElementValue(scanResult, "BEGIN:VCALENDAR"));
                 return scanResult;
             }
         }
 
-        public IWebElement Modal => Wait.Until(ExpectedConditions.ElementIsVisible(By.Id("saveTool")));
+        public IWebElement Modal => _wait.Until(ExpectedConditions.ElementIsVisible(By.Id("saveTool")));
+
+
+        public void EnsurePageLoad()
+        {
+            _wait.Until(ExpectedConditions.ElementExists(By.Id("saveTool")));
+        }
 
         public void CheckModal()
         {
-            if (Driver.FindElement(By.Id("saveTool")).Displayed)
+            if (_driver.FindElement(By.Id("saveTool")).Displayed)
             {
-                Driver.ExecuteJavaScript("document.getElementById('saveTool').remove();");
+                _driver.ExecuteJavaScript("document.getElementById('saveTool').remove();");
             }
         }
 
         public async Task DownloadPageSourceAsync()
         {
-            string pageSource = Driver.PageSource;
+            string pageSource = _driver.PageSource;
             await File.WriteAllTextAsync("PageSource.html", pageSource);
         }
     }
