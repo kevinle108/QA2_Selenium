@@ -32,7 +32,7 @@ namespace QA2_Selenium
 {
     public class UnitTests
     {
-        readonly ITestOutputHelper output;
+        readonly ITestOutputHelper _output;
 
         readonly string eventTitle = "Pants Appreciation Month";
         readonly string eventLocation = "Everywhere";
@@ -41,7 +41,7 @@ namespace QA2_Selenium
 
         public UnitTests(ITestOutputHelper output)
         {
-            this.output = output;
+            this._output = output;
         }
 
 
@@ -49,13 +49,13 @@ namespace QA2_Selenium
         public void File_Uploads_Successfully()
         {
             using IWebDriver driver = new ChromeDriver();            
-            ScanPage scanPage = new ScanPage(driver);
+            var scanPage = new ScanPage(driver);
             driver.Navigate().GoToUrl(scanPage.Url);
 
             // Get the file name and path for file upload
             string filePath = Path.Combine(Directory.GetCurrentDirectory(), sampleFileName);
-            output.WriteLine(Directory.GetCurrentDirectory());
-            output.WriteLine(filePath);
+            _output.WriteLine(Directory.GetCurrentDirectory());
+            _output.WriteLine(filePath);
 
             scanPage.FileUpload.SendKeys(filePath);
             string resultFileName = scanPage.FileName.Text;
@@ -164,16 +164,16 @@ namespace QA2_Selenium
             // Get the file name and path for file upload
             string fileName = homePage.EventPngName.GetAttribute("download");
             string filePath = Path.Combine(downloadDirectory, fileName);
-            output.WriteLine(fileName);
-            output.WriteLine(Directory.GetCurrentDirectory());
-            output.WriteLine(filePath);
+            _output.WriteLine(fileName);
+            _output.WriteLine(Directory.GetCurrentDirectory());
+            _output.WriteLine(filePath);
 
             var scanPage = new ScanPage(driver);
             driver.SwitchTo().Window(driver.WindowHandles.Last());
 
             // Upload file
             IWebElement saveModal = driver.FindElement(By.XPath("//div[@id='saveTool']//button[@aria-label='Close']"));
-            output.WriteLine("saveModal " + saveModal.Displayed.ToString());
+            _output.WriteLine("saveModal " + saveModal.Displayed.ToString());
             scanPage.FileUpload.SendKeys(filePath);
 
             // Get the result
@@ -187,6 +187,14 @@ namespace QA2_Selenium
                 resultText.Should().Contain($"DESCRIPTION:{eventDescription}");
             }
         }
-      
+
+        [Fact]
+        public void Correct_Contact_Email()
+        {
+            using IWebDriver driver = new ChromeDriver();
+            ContactPage contactPage= new ContactPage(driver);
+            contactPage.ContactEmail.Text.Should().Be(contactPage.EmailAddress);
+        }
+
     }
 }
