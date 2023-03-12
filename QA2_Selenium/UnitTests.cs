@@ -118,59 +118,6 @@ namespace QA2_Selenium
             homePage.Alert.Text.Should().Be("Please provide more data");                       
         }
 
-
-
-
-        //[Fact]
-        //public void Show_DatePicker_Widget_Via_Javascript()
-        //{
-        //    using (IWebDriver driver = new ChromeDriver())
-        //    {
-        //        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
-        //        driver.Manage().Window.Maximize();
-        //        driver.Navigate().GoToUrl(homeUrl);
-
-        //        var homePage = new HomePage(driver, wait);
-
-        //        homePage.EventButton.Click();
-
-        //        IWebElement startDatePicker = homePage.EventStartDateInput;
-        //        String javascript = "arguments[0].click()";
-        //        IJavaScriptExecutor jse = (IJavaScriptExecutor)driver;
-        //        jse.ExecuteScript(javascript, startDatePicker);
-        //        IWebElement dateWidget = driver.FindElement(By.XPath("//div[@class='bootstrap-datetimepicker-widget dropdown-menu top']"));
-        //        var columns = dateWidget.FindElements(By.TagName("td"));
-        //        Thread.Sleep(TimeSpan.FromSeconds(5));
-        //        return;
-
-        //    }
-        //}
-
-        //[Fact]
-        //public void Generate_And_Download_Event_QR_Code()
-        //{
-        //    using (IWebDriver driver = new ChromeDriver())
-        //    {
-        //        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
-        //        HomePage homePage = new HomePage(driver, new WebDriverWait(driver, TimeSpan.FromSeconds(5)));
-                
-        //        driver.Manage().Window.Maximize();
-        //        driver.Navigate().GoToUrl(homeUrl);
-        //        homePage.EventButton.Click();
-        //        homePage.EventTitle.SendKeys("Pants Appreciation Month");
-        //        homePage.EventLocation.SendKeys("Everywhere");
-        //        homePage.EventStartDateInput.Click();
-        //        homePage.EventFirstDayOfMonth.Click();
-        //        homePage.EventEndDateInput.Click();
-        //        homePage.EventLastDayOfMonth.Click();                 
-        //        homePage.EventNotes.SendKeys("Celebrate pants all month long!");
-        //        homePage.EventSaveButton.Click();
-        //        homePage.EventSavePngButton.Click();
-
-        //        Thread.Sleep(TimeSpan.FromSeconds(3));
-        //    }
-        //}
-        
         [Fact]
         public void Generate_And_Download_Event_QR_Code_Custom_Folder()
         {
@@ -210,7 +157,9 @@ namespace QA2_Selenium
 
             // Download QR code png file
             homePage.EventSavePngButton.Click();
-            Thread.Sleep(TimeSpan.FromSeconds(3));
+
+            // check for download completion by looking for donate modal
+            homePage.DonateModal.Click();           
 
             // Get the file name and path for file upload
             string fileName = homePage.EventPngName.GetAttribute("download");
@@ -223,6 +172,8 @@ namespace QA2_Selenium
             driver.SwitchTo().Window(driver.WindowHandles.Last());
 
             // Upload file
+            IWebElement saveModal = driver.FindElement(By.XPath("//div[@id='saveTool']//button[@aria-label='Close']"));
+            output.WriteLine("saveModal " + saveModal.Displayed.ToString());
             scanPage.FileUpload.SendKeys(filePath);
 
             // Get the result
@@ -236,37 +187,6 @@ namespace QA2_Selenium
                 resultText.Should().Contain($"DESCRIPTION:{eventDescription}");
             }
         }
-        
-        // TODO: remove old tooltip test
-        //[Fact]
-        //public void ToolTip_Should_Appear_On_Hover()
-        //{
-        //    using (IWebDriver driver = new ChromeDriver())
-        //    {
-        //        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
-        //        HomePage homePage = new HomePage(driver, new WebDriverWait(driver, TimeSpan.FromSeconds(5)));
-                
-        //        driver.Manage().Window.Maximize();
-        //        driver.Navigate().GoToUrl(homeUrl);
-        //        homePage.EventButton.Click();
-        //        homePage.EventTitle.SendKeys("Pants Appreciation Month");
-        //        homePage.EventLocation.SendKeys("Everywhere");
-        //        homePage.EventStartDateInput.Click();
-        //        homePage.EventFirstDayOfMonth.Click();
-        //        homePage.EventEndDateInput.Click();
-        //        homePage.EventLastDayOfMonth.Click();                 
-        //        homePage.EventNotes.SendKeys("Celebrate pants all month long!");
-        //        homePage.EventSaveButton.Click();
-
-        //        Actions actions = new Actions(driver);
-        //        actions.MoveToElement(homePage.EventToolTip).Perform();
-                
-        //        using (new AssertionScope())
-        //        {
-        //            homePage.EventToolTipText.Displayed.Should().BeTrue();
-        //            homePage.EventToolTipText.Text.Should().Be("Copy URL");
-        //        }                
-        //    }
-        //}
+      
     }
 }

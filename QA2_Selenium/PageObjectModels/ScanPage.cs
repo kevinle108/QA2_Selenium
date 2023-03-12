@@ -52,7 +52,7 @@ namespace QA2_Selenium.PageObjectModels
             }
         }
 
-        public IWebElement Modal => _wait.Until(ExpectedConditions.ElementIsVisible(By.Id("saveTool")));
+        public IWebElement CloseModalButton => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[@id='saveTool']//button[@aria-label='Close']")));
 
 
         public void EnsurePageLoad()

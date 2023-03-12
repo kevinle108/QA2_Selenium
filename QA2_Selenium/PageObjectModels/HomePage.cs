@@ -50,8 +50,7 @@ namespace QA_2_Browser_Testing.PageObjectModels
         public IWebElement EventPngName => _driver.FindElement(By.XPath("//div[contains(@class, 'linksholder')]//a[@class='serve-png d-none']"));
         public IWebElement EventToolTip => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//span[@class='tooltip2']")));
         public IWebElement EventToolTipText => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//*[@id='myTooltip']")));
-        public IWebElement Modal => _wait.Until(ExpectedConditions.ElementIsVisible(By.Id("saveTool")));
-        public IWebElement CloseModalButton => _driver.FindElement(By.XPath("//div[@id='saveTool']//button[@aria-label='Close']"));
+        public IWebElement DonateModal => _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//div[@id='exampleModal']//button[@aria-label='Close']")));
         public IWebElement Alert => _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//div[@role='alert']//div[contains(@class, 'toast-body')]")));
 
         // TODO: Close Pop-Up Add Modal after download
