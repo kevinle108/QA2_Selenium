@@ -10,6 +10,7 @@ using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit.Abstractions;
 
 namespace QA_2_Browser_Testing.PageObjectModels
 {
@@ -28,9 +29,6 @@ namespace QA_2_Browser_Testing.PageObjectModels
             _driver.Navigate().GoToUrl(Url);
             EnsurePageLoad();
         }
-
-
-
 
         public IWebElement UrlTextInput => _driver.FindElement(By.Id("malink"));
         public IWebElement ScannerLink => _wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("scan")));
@@ -56,6 +54,17 @@ namespace QA_2_Browser_Testing.PageObjectModels
         // TODO: Close Pop-Up Add Modal after download
         // public IWebElement CloseModalButton => Wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[@id='saveTool']//button[@aria-label='Close']")));
         // public IWebElement CloseModalButton => Driver.FindElement(By.XPath("//div[@id='saveTool']//button[@aria-label='Close']"));
+
+
+        public IWebElement CheckModal(ITestOutputHelper output)
+        {
+            var ele = _driver.FindElement((By.XPath("//div[@id='exampleModal']//button[@aria-label='Close']")));
+            output.WriteLine("Before wait, ele " + ele.Displayed);
+            ele = _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//div[@id='exampleModal']//button[@aria-label='Close']")));
+            output.WriteLine("After wait, ele " + ele.Displayed);
+            return ele;
+        }
+
 
         public void EnsurePageLoad()
         {

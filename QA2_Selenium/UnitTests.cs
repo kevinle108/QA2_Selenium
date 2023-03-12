@@ -159,7 +159,8 @@ namespace QA2_Selenium
             homePage.EventSavePngButton.Click();
 
             // check for download completion by looking for donate modal
-            homePage.DonateModal.Click();           
+            homePage.CheckModal(_output);
+            //homePage.DonateModal.Click();           
 
             // Get the file name and path for file upload
             string fileName = homePage.EventPngName.GetAttribute("download");
