@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
 using OpenQA.Selenium.Support.Extensions;
+using Xunit.Abstractions;
 
 namespace QA2_Selenium.PageObjectModels
 {
@@ -16,6 +17,7 @@ namespace QA2_Selenium.PageObjectModels
         readonly IWebDriver _driver;
         readonly WebDriverWait _wait;
         public string Url = "https://4qrcode.com/scan-qr-code.php";
+        public string Title = "4qrcode - Free online QR Code reader camera or with image";
 
         public ScanPage(IWebDriver driver)
         {
@@ -54,18 +56,19 @@ namespace QA2_Selenium.PageObjectModels
 
         public IWebElement CloseModalButton => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[@id='saveTool']//button[@aria-label='Close']")));
 
-
         public void EnsurePageLoad()
         {
             _wait.Until(ExpectedConditions.ElementExists(By.Id("saveTool")));
         }
 
-        public void CheckModal()
+        public IWebElement CheckModal()
         {
-            if (_driver.FindElement(By.Id("saveTool")).Displayed)
-            {
-                _driver.ExecuteJavaScript("document.getElementById('saveTool').remove();");
-            }
+            string xpath = "//div[@id='saveTool']//button[@aria-label='Close']";
+            var ele = _driver.FindElement((By.XPath(xpath)));
+            ele = _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath(xpath)));
+            ele.Click();
+            ele = _driver.FindElement((By.XPath(xpath)));
+            return ele;
         }
 
         public async Task DownloadPageSourceAsync()

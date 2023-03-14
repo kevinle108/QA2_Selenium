@@ -9,23 +9,12 @@ using System.ComponentModel.Design;
 using OpenQA.Selenium.Interactions;
 using FluentAssertions.Execution;
 using QA2_Selenium.PageObjectModels;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 
 // Project Requirements: https://docs.google.com/document/d/1YSXJaFg-Am6vQNyrQI8wuJMaX9g0VAs_f7byq2izn-I/edit
 
 // Generate, then Read
 // https://4qrcode.com/ + https://4qrcode.com/scan-qr-code.php
-
-// QR Code Readers
-// https://qreader.online/
-// https://me-qr.com/
-// https://4qrcode.com/scan-qr-code.php                
-
-// Tooltip6
-// https://me-qr.com/ + https://me-qr-scanner.com/qr-scanner#scan-using-file
-
-// File Download
-// https://www.youtube.com/watch?v=w1QA5-rYELg
-// https://www.youtube.com/watch?v=_8fwyB0t5Ac
 
 
 namespace QA2_Selenium
@@ -33,7 +22,7 @@ namespace QA2_Selenium
     public class UnitTests
     {
         readonly ITestOutputHelper _output;
-
+        readonly string pantsUrl = "https://en.wikipedia.org/wiki/Trousers";
         readonly string eventTitle = "Pants Appreciation Month";
         readonly string eventLocation = "Everywhere";
         readonly string eventDescription = "Celebrate pants all month long!";
@@ -44,8 +33,87 @@ namespace QA2_Selenium
             this._output = output;
         }
 
+        [Fact]
+        public void HomePage_Loads_Successfully()
+        {
+            using IWebDriver driver = new ChromeDriver();
+            HomePage homePage = new HomePage(driver);
+            driver.Title.Should().Be(homePage.Title);
+        }
 
-       [Fact]
+        [Fact]
+        public void Color_Picker_Changes_QR_Background()
+        {
+            using IWebDriver driver = new ChromeDriver();
+            HomePage homePage = new HomePage(driver);
+
+            // Scrolls page to better view tooltip
+            ((IJavaScriptExecutor)driver).ExecuteScript("window.scrollTo(0, (document.body.scrollHeight)/2)");
+
+            homePage.UrlTextInput.SendKeys(pantsUrl);
+            homePage.ColorsButton.Click();
+            homePage.ColorPicker.Clear();
+            homePage.ColorPicker.SendKeys("#fb0404");
+            var color = homePage.QrBox.GetCssValue("fill");
+
+            using (new AssertionScope())
+            {
+                homePage.QrBox.Displayed.Should().BeTrue();
+                color.Should().Be("rgb(251, 4, 4)");
+            }
+        }
+
+        [Fact]
+        public void ScanPage_Loads_Successfully()
+        {
+            using IWebDriver driver = new ChromeDriver();
+            var scanPage = new ScanPage(driver);
+            driver.Navigate().GoToUrl(scanPage.Url);
+            driver.Title.Should().Be(scanPage.Title);
+        }
+
+        [Fact]
+        public void ContactPage_Loads_Successfully()
+        {
+            using IWebDriver driver = new ChromeDriver();
+            ContactPage contactPage = new ContactPage(driver);
+            driver.Title.Should().Be(contactPage.Title);
+        }
+
+        //[Fact]
+        //public void ScannerLink_Routes_To_ScanPage()
+        //{
+        //    using IWebDriver driver = new ChromeDriver();
+        //    HomePage homePage = new HomePage(driver);
+        //    homePage.ScannerLink.Click();
+        //    ScanPage scanPage = new ScanPage(driver);
+        //    driver.Title.Should().Be(scanPage.Title);
+        //}
+
+        //[Fact]
+        //public void ContactLink_Routes_To_ContactPage()
+        //{
+        //    using IWebDriver driver = new ChromeDriver();
+        //    HomePage homePage = new HomePage(driver);
+        //    homePage.ContactLink.Click();
+        //    ContactPage contactPage = new ContactPage(driver);
+        //    driver.Title.Should().Be(contactPage.Title);
+        //}
+
+        
+        [Theory]
+        [InlineData("scan", "4qrcode - Free online QR Code reader camera or with image")]
+        [InlineData("contact", "Contact")]
+        public void Links_Routes_To_CorrectPages(string elementId, string pageTitle)
+        {
+            using IWebDriver driver = new ChromeDriver();
+            HomePage homePage = new HomePage(driver);
+            IWebElement ele = driver.FindElement(By.Id($"{elementId}"));
+            ele.Click();
+            driver.Title.Should().Be(pageTitle);
+        }
+
+        [Fact]
         public void File_Uploads_Successfully()
         {
             using IWebDriver driver = new ChromeDriver();            
@@ -57,9 +125,10 @@ namespace QA2_Selenium
             _output.WriteLine(Directory.GetCurrentDirectory());
             _output.WriteLine(filePath);
 
+            // upload file
             scanPage.FileUpload.SendKeys(filePath);
             string resultFileName = scanPage.FileName.Text;
-            string resultText = scanPage.ScanResult.GetAttribute("value");
+            string resultText = scanPage.ScanResult.GetAttribute("value");         
 
             // Check the QR text for correct text information
             using (new AssertionScope())
@@ -67,7 +136,6 @@ namespace QA2_Selenium
                 resultFileName.Should().Be(sampleFileName);
                 resultText.Should().Contain("BEGIN:VCALENDAR");
             }
-
         }
 
         [Fact]
@@ -92,7 +160,7 @@ namespace QA2_Selenium
             // Scrolls page to better view tooltip
             ((IJavaScriptExecutor)driver).ExecuteScript("window.scrollTo(0, document.body.scrollHeight)");
 
-            homePage.UrlTextInput.SendKeys("https://www.dictionary.com/browse/pants");
+            homePage.UrlTextInput.SendKeys(pantsUrl);
             homePage.EventSaveButton.Click();
 
             var tooltip = homePage.EventToolTip;
@@ -159,7 +227,7 @@ namespace QA2_Selenium
             homePage.EventSavePngButton.Click();
 
             // check for download completion by looking for donate modal
-            homePage.CheckModal(_output);
+            homePage.CheckModal();
             //homePage.DonateModal.Click();           
 
             // Get the file name and path for file upload

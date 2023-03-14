@@ -14,6 +14,7 @@ namespace QA2_Selenium.PageObjectModels
         readonly IWebDriver _driver;
         readonly WebDriverWait _wait;
         public string Url = "https://4qrcode.com/contact.php";
+        public string Title = "Contact";
         public string EmailAddress = "Support@4qrcode.com";
 
         public ContactPage(IWebDriver driver)

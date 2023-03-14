@@ -16,9 +16,10 @@ namespace QA_2_Browser_Testing.PageObjectModels
 {
     internal class HomePage
     {
-        IWebDriver _driver;
-        WebDriverWait _wait;
+        readonly IWebDriver _driver;
+        readonly WebDriverWait _wait;
         public string Url = "https://4qrcode.com/";
+        public string Title = "4qrcode - Free online QR Code generator ( create a QR Code ).";
 
 
         public HomePage(IWebDriver driver)
@@ -31,7 +32,12 @@ namespace QA_2_Browser_Testing.PageObjectModels
         }
 
         public IWebElement UrlTextInput => _driver.FindElement(By.Id("malink"));
+        public IWebElement ColorsButton => _driver.FindElement(By.Id("btn1"));
+        public IWebElement ColorPicker => _driver.FindElement(By.Id("qrcolorpicker"));
+        public IWebElement QrBox => _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[name()='svg']/*[name()='rect']")));
+        //public IWebElement QrBox1 => _driver.FindElement(By.XPath("//*[name()='svg']/*[name()='rect']"));
         public IWebElement ScannerLink => _wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("scan")));
+        public IWebElement ContactLink => _wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("contact")));
         public IWebElement EventButton => _driver.FindElement(By.XPath("//span[text()='Event']/ancestor::a"));
         public IWebElement PhoneButton => _driver.FindElement(By.XPath("//a[@href='#phone']"));
         public IWebElement EventHeader => _driver.FindElement(By.XPath("//*[@id='event']/h2"));
@@ -51,17 +57,12 @@ namespace QA_2_Browser_Testing.PageObjectModels
         public IWebElement DonateModal => _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//div[@id='exampleModal']//button[@aria-label='Close']")));
         public IWebElement Alert => _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//div[@role='alert']//div[contains(@class, 'toast-body')]")));
 
-        // TODO: Close Pop-Up Add Modal after download
-        // public IWebElement CloseModalButton => Wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[@id='saveTool']//button[@aria-label='Close']")));
-        // public IWebElement CloseModalButton => Driver.FindElement(By.XPath("//div[@id='saveTool']//button[@aria-label='Close']"));
-
-
-        public IWebElement CheckModal(ITestOutputHelper output)
+        public IWebElement CheckModal()
         {
             var ele = _driver.FindElement((By.XPath("//div[@id='exampleModal']//button[@aria-label='Close']")));
-            output.WriteLine("Before wait, ele " + ele.Displayed);
             ele = _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//div[@id='exampleModal']//button[@aria-label='Close']")));
-            output.WriteLine("After wait, ele " + ele.Displayed);
+            ele.Click();
+            ele = _driver.FindElement((By.XPath("//div[@id='exampleModal']//button[@aria-label='Close']")));
             return ele;
         }
 
@@ -76,7 +77,7 @@ namespace QA_2_Browser_Testing.PageObjectModels
         {
             int lastDayOfMonth = DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month);
             var dayOptions = EventDateWidget.FindElements(By.XPath($"//td[text()='{lastDayOfMonth}']"));
-            return dayOptions[dayOptions.Count - 1];
+            return dayOptions[^1];
         }
 
         // Used for exposing DateWidget html structure since inspecting in Chrome Dev Tools would cause the DateWidget to lose focus and disappear from the DOM tree
