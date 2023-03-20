@@ -80,37 +80,24 @@ namespace QA2_Selenium
             driver.Title.Should().Be(contactPage.Title);
         }
 
-        //[Fact]
-        //public void ScannerLink_Routes_To_ScanPage()
-        //{
-        //    using IWebDriver driver = new ChromeDriver();
-        //    HomePage homePage = new HomePage(driver);
-        //    homePage.ScannerLink.Click();
-        //    ScanPage scanPage = new ScanPage(driver);
-        //    driver.Title.Should().Be(scanPage.Title);
-        //}
-
-        //[Fact]
-        //public void ContactLink_Routes_To_ContactPage()
-        //{
-        //    using IWebDriver driver = new ChromeDriver();
-        //    HomePage homePage = new HomePage(driver);
-        //    homePage.ContactLink.Click();
-        //    ContactPage contactPage = new ContactPage(driver);
-        //    driver.Title.Should().Be(contactPage.Title);
-        //}
-
-        
-        [Theory]
-        [InlineData("scan", "4qrcode - Free online QR Code reader camera or with image")]
-        [InlineData("contact", "Contact")]
-        public void Links_Routes_To_CorrectPages(string elementId, string pageTitle)
+        [Fact]
+        public void ScannerLink_Routes_To_ScanPage()
         {
             using IWebDriver driver = new ChromeDriver();
             HomePage homePage = new HomePage(driver);
-            IWebElement ele = driver.FindElement(By.Id($"{elementId}"));
-            ele.Click();
-            driver.Title.Should().Be(pageTitle);
+            homePage.ScannerLink.Click();
+            ScanPage scanPage = new ScanPage(driver);
+            driver.Title.Should().Be(scanPage.Title);
+        }
+
+        [Fact]
+        public void ContactLink_Routes_To_ContactPage()
+        {
+            using IWebDriver driver = new ChromeDriver();
+            HomePage homePage = new HomePage(driver);
+            homePage.ContactLink.Click();
+            ContactPage contactPage = new ContactPage(driver);
+            driver.Title.Should().Be(contactPage.Title);
         }
 
         [Fact]
