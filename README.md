@@ -10,7 +10,7 @@ Create a suite of automated UI tests for publicly accessible web applications. Y
 
 - [x] 2. Include at least 1 negative test.
 
-3. Include at least one test for each of the following complex page controls: 
+- [x] 3. Include at least one test for each of the following complex page controls: 
 
 - [x] - A file upload
 
