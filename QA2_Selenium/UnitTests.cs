@@ -16,6 +16,8 @@ using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 // Generate, then Read
 // https://4qrcode.com/ + https://4qrcode.com/scan-qr-code.php
 
+// Questions for Class
+// test run order
 
 namespace QA2_Selenium
 {
