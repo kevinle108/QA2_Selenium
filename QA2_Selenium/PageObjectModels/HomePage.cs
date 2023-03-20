@@ -31,11 +31,12 @@ namespace QA_2_Browser_Testing.PageObjectModels
             EnsurePageLoad();
         }
 
+        public IWebElement LangChangeButton => _driver.FindElement(By.Id("navbarDropdown"));
+        public IWebElement LangSpanishOption => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[@aria-labelledby='navbarDropdown']//a[@href='https://4qrcode.com/?lang=es']")));
         public IWebElement UrlTextInput => _driver.FindElement(By.Id("malink"));
         public IWebElement ColorsButton => _driver.FindElement(By.Id("btn1"));
         public IWebElement ColorPicker => _driver.FindElement(By.Id("qrcolorpicker"));
         public IWebElement QrBox => _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[name()='svg']/*[name()='rect']")));
-        //public IWebElement QrBox1 => _driver.FindElement(By.XPath("//*[name()='svg']/*[name()='rect']"));
         public IWebElement ScannerLink => _wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("scan")));
         public IWebElement ContactLink => _wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("contact")));
         public IWebElement EventButton => _driver.FindElement(By.XPath("//span[text()='Event']/ancestor::a"));
@@ -48,6 +49,9 @@ namespace QA_2_Browser_Testing.PageObjectModels
         public IWebElement EventDateWidget => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[@class='bootstrap-datetimepicker-widget dropdown-menu top']")));
         public IWebElement EventFirstDayOfMonth => EventDateWidget.FindElement(By.XPath("//td[text()='1']"));
         public IWebElement EventLastDayOfMonth => GetLastDay();
+        public IWebElement EventReminderDropdown => _driver.FindElement(By.Id("eventreminder"));
+        public IWebElement EventReminderNowOption => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//option[@value='PT0M']")));
+
         public IWebElement EventNotes => _driver.FindElement(By.XPath("//label[text()='Notes']/following-sibling::textarea"));
         public IWebElement EventSaveButton => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//span[@id='preloadSave']//parent::button")));
         public IWebElement EventSavePngButton => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[contains(@class, 'linksholder')]//button[contains(@class, 'svgtopng')]")));

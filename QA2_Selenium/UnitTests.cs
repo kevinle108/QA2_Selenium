@@ -42,28 +42,6 @@ namespace QA2_Selenium
         }
 
         [Fact]
-        public void Color_Picker_Changes_QR_Background()
-        {
-            using IWebDriver driver = new ChromeDriver();
-            HomePage homePage = new HomePage(driver);
-
-            // Scrolls page to better view tooltip
-            ((IJavaScriptExecutor)driver).ExecuteScript("window.scrollTo(0, (document.body.scrollHeight)/2)");
-
-            homePage.UrlTextInput.SendKeys(pantsUrl);
-            homePage.ColorsButton.Click();
-            homePage.ColorPicker.Clear();
-            homePage.ColorPicker.SendKeys("#fb0404");
-            var color = homePage.QrBox.GetCssValue("fill");
-
-            using (new AssertionScope())
-            {
-                homePage.QrBox.Displayed.Should().BeTrue();
-                color.Should().Be("rgb(251, 4, 4)");
-            }
-        }
-
-        [Fact]
         public void ScanPage_Loads_Successfully()
         {
             using IWebDriver driver = new ChromeDriver();
@@ -98,6 +76,92 @@ namespace QA2_Selenium
             homePage.ContactLink.Click();
             ContactPage contactPage = new ContactPage(driver);
             driver.Title.Should().Be(contactPage.Title);
+        }
+
+        [Fact]
+        public void ScannerLink_Opens_In_NewTab()
+        {
+            using IWebDriver driver = new ChromeDriver();
+            HomePage homePage = new HomePage(driver);
+
+            // Opens Scanner in new tab
+            Actions openInNewTab = new Actions(driver);
+            openInNewTab
+                .KeyDown(Keys.LeftControl)
+                .Click(homePage.ScannerLink)
+                .KeyUp(Keys.LeftControl)
+                .Build()
+                .Perform();
+            driver.SwitchTo().Window(driver.WindowHandles.Last());
+
+            ScanPage scanPage = new ScanPage(driver);
+            driver.Title.Should().Be(scanPage.Title);
+        }
+
+        [Fact]
+        public void Change_Language_To_Spanish()
+        {
+            using IWebDriver driver = new ChromeDriver();
+            HomePage homePage = new HomePage(driver);
+            homePage.LangChangeButton.Click();
+            homePage.LangSpanishOption.Click();
+            homePage.EnsurePageLoad();
+
+            using (new AssertionScope())
+            {
+                driver.Url.Should().Be("https://4qrcode.com/?lang=es");
+                driver.Title.Should().Be("4qrcode - Crea tu código QR gratis en línea (Generador de código Qr)");
+            }
+
+        }
+
+        [Fact]
+        public void Color_Picker_Changes_QR_Background()
+        {
+            using IWebDriver driver = new ChromeDriver();
+            HomePage homePage = new HomePage(driver);
+
+            // Scrolls page to better view tooltip
+            ((IJavaScriptExecutor)driver).ExecuteScript("window.scrollTo(0, (document.body.scrollHeight)/2)");
+
+            homePage.UrlTextInput.SendKeys(pantsUrl);
+            homePage.ColorsButton.Click();
+            homePage.ColorPicker.Clear();
+            homePage.ColorPicker.SendKeys("#fb0404");
+            var color = homePage.QrBox.GetCssValue("fill");
+
+            using (new AssertionScope())
+            {
+                homePage.QrBox.Displayed.Should().BeTrue();
+                color.Should().Be("rgb(251, 4, 4)");
+            }
+        }
+
+        [Fact]
+        public void Reminder_Dropdown_Selects_Event_Start()
+        {
+            using IWebDriver driver = new ChromeDriver();
+            HomePage homePage = new HomePage(driver);
+
+            homePage.EventButton.Click();
+            homePage.EventStartDateInput.Click();
+            homePage.EventFirstDayOfMonth.Click();
+
+            // Scrolls page to better view tooltip
+            ((IJavaScriptExecutor)driver).ExecuteScript("window.scrollTo(0, document.body.scrollHeight)");
+
+            homePage.EventReminderDropdown.Click();
+            homePage.EventReminderNowOption.Click();
+
+            homePage.EventReminderDropdown.GetDomProperty("selectedIndex").Should().Be("1");
+        }
+
+        [Fact]
+        public void Correct_Contact_Email()
+        {
+            using IWebDriver driver = new ChromeDriver();
+            ContactPage contactPage = new ContactPage(driver);
+            contactPage.ContactEmail.Text.Should().Be(contactPage.EmailAddress);
         }
 
         [Fact]
@@ -242,15 +306,6 @@ namespace QA2_Selenium
                 resultText.Should().Contain($"LOCATION:{eventLocation}");
                 resultText.Should().Contain($"DESCRIPTION:{eventDescription}");
             }
-        }
-
-        [Fact]
-        public void Correct_Contact_Email()
-        {
-            using IWebDriver driver = new ChromeDriver();
-            ContactPage contactPage= new ContactPage(driver);
-            contactPage.ContactEmail.Text.Should().Be(contactPage.EmailAddress);
-        }
-
+        }        
     }
 }
