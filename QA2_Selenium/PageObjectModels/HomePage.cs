@@ -38,9 +38,17 @@ namespace QA_2_Browser_Testing.PageObjectModels
         public IWebElement ColorPicker => _driver.FindElement(By.Id("qrcolorpicker"));
         public IWebElement QrBox => _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[name()='svg']/*[name()='rect']")));
         public IWebElement ScannerLink => _wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("scan")));
-        public IWebElement ContactLink => _wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("contact")));
+        public IWebElement ContactLink => _wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("contact")));               
+        public IWebElement DonateModal => _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//div[@id='exampleModal']//button[@aria-label='Close']")));
+        public IWebElement Alert => _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//div[@role='alert']//div[contains(@class, 'toast-body')]")));
+        public IWebElement PhoneButton => _driver.FindElement(By.XPath("//a[@href='#tel']"));
+        public IWebElement PhoneNumberInput => _driver.FindElement(By.XPath("//div[@id='tel']//input"));
+
+
+
+
+        // Event QR Section Elements
         public IWebElement EventButton => _driver.FindElement(By.XPath("//span[text()='Event']/ancestor::a"));
-        public IWebElement PhoneButton => _driver.FindElement(By.XPath("//a[@href='#phone']"));
         public IWebElement EventHeader => _driver.FindElement(By.XPath("//*[@id='event']/h2"));
         public IWebElement EventTitle => _driver.FindElement(By.XPath("//label[text()='Event title']/following-sibling::input"));
         public IWebElement EventLocation => _driver.FindElement(By.XPath("//label[text()='Location']/following-sibling::input"));
@@ -51,15 +59,12 @@ namespace QA_2_Browser_Testing.PageObjectModels
         public IWebElement EventLastDayOfMonth => GetLastDay();
         public IWebElement EventReminderDropdown => _driver.FindElement(By.Id("eventreminder"));
         public IWebElement EventReminderNowOption => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//option[@value='PT0M']")));
-
         public IWebElement EventNotes => _driver.FindElement(By.XPath("//label[text()='Notes']/following-sibling::textarea"));
         public IWebElement EventSaveButton => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//span[@id='preloadSave']//parent::button")));
         public IWebElement EventSavePngButton => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[contains(@class, 'linksholder')]//button[contains(@class, 'svgtopng')]")));
         public IWebElement EventPngName => _driver.FindElement(By.XPath("//div[contains(@class, 'linksholder')]//a[@class='serve-png d-none']"));
         public IWebElement EventToolTip => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//span[@class='tooltip2']")));
-        public IWebElement EventToolTipText => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//*[@id='myTooltip']")));
-        public IWebElement DonateModal => _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//div[@id='exampleModal']//button[@aria-label='Close']")));
-        public IWebElement Alert => _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//div[@role='alert']//div[contains(@class, 'toast-body')]")));
+        public IWebElement EventToolTipText => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//*[@id='myTooltip']")));        
 
         public IWebElement CheckModal()
         {

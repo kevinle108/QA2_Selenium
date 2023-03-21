@@ -97,7 +97,11 @@ namespace QA2_Selenium
             driver.SwitchTo().Window(driver.WindowHandles.Last());
 
             ScanPage scanPage = new ScanPage(driver);
-            driver.Title.Should().Be(scanPage.Title);
+            using (new AssertionScope())
+            {
+                driver.WindowHandles.Should().HaveCount(2);
+                driver.Title.Should().Be(scanPage.Title);
+            }
         }
 
         [Fact]
@@ -139,6 +143,21 @@ namespace QA2_Selenium
             }
         }
 
+        [Fact]
+        public void EventButton_Displays_Event_Section()
+        {
+            using IWebDriver driver = new ChromeDriver();
+            HomePage homePage = new HomePage(driver);
+
+            homePage.EventButton.Click();            
+
+            using (new AssertionScope())
+            {
+                homePage.EventHeader.Displayed.Should().BeTrue();
+                homePage.EventHeader.Text.Should().Be("Event QR Code");
+            }
+        }
+        
         [Fact]
         public void Reminder_Dropdown_Selects_Event_Start()
         {
@@ -238,9 +257,21 @@ namespace QA2_Selenium
             
             homePage.Alert.Text.Should().Be("Please provide more data");                       
         }
+        
+        [Fact]
+        public void Negative_Test_Phone_Number_Rejects_Letters()
+        {
+            using IWebDriver driver = new ChromeDriver();
+            HomePage homePage = new HomePage(driver);
+
+            homePage.PhoneButton.Click();
+            homePage.PhoneNumberInput.SendKeys("abc123");
+            
+            homePage.PhoneNumberInput.GetAttribute("value").Should().Be("123");                       
+        }
 
         [Fact]
-        public void Generate_And_Download_Event_QR_Code_Custom_Folder()
+        public void Generate_Download_And_Verify_QR_Code()
         {
             // Set up the ChromeOptions to download the file to a specific folder
             ChromeOptions options = new ChromeOptions();
