@@ -22,10 +22,10 @@ namespace QA_2_Browser_Testing.PageObjectModels
         public string Title = "4qrcode - Free online QR Code generator ( create a QR Code ).";
 
 
-        public HomePage(IWebDriver driver)
+        public HomePage(IWebDriver driver, WebDriverWait wait)
         {
             _driver = driver;
-            _wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+            _wait = wait;
             _driver.Manage().Window.Maximize();
             _driver.Navigate().GoToUrl(Url);
             EnsurePageLoad();

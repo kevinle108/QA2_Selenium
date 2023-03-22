@@ -19,10 +19,10 @@ namespace QA2_Selenium.PageObjectModels
         public string Url = "https://4qrcode.com/scan-qr-code.php";
         public string Title = "4qrcode - Free online QR Code reader camera or with image";
 
-        public ScanPage(IWebDriver driver)
+        public ScanPage(IWebDriver driver, WebDriverWait wait)
         {
             _driver = driver;
-            _wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+            _wait = wait;
             _driver.Manage().Window.Maximize();
         }
 

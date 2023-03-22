@@ -17,10 +17,10 @@ namespace QA2_Selenium.PageObjectModels
         public string Title = "Contact";
         public string EmailAddress = "Support@4qrcode.com";
 
-        public ContactPage(IWebDriver driver)
+        public ContactPage(IWebDriver driver, WebDriverWait wait)
         {
             _driver = driver;
-            _wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+            _wait = wait;
             _driver.Manage().Window.Maximize();
             _driver.Navigate().GoToUrl(Url);
             EnsurePageLoad();
