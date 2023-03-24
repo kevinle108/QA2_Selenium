@@ -17,7 +17,7 @@ using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 // https://4qrcode.com/ + https://4qrcode.com/scan-qr-code.php
 
 // Questions for Class
-// test run order
+// test run order, run headless in real job?
 
 namespace QA2_Selenium
 {
@@ -27,16 +27,24 @@ namespace QA2_Selenium
         IWebDriver _driver;
         WebDriverWait _wait;
 
+        string downloadDirectory = Path.Combine(Directory.GetCurrentDirectory(), "MyDownloads"); 
+        readonly string sampleFileName = "sample.png";
+
         readonly string pantsUrl = "https://en.wikipedia.org/wiki/Trousers";
         readonly string eventTitle = "Pants Appreciation Month";
         readonly string eventLocation = "Everywhere";
         readonly string eventDescription = "Celebrate pants all month long!";
-        readonly string sampleFileName = "sample.png";
 
         public UnitTests(ITestOutputHelper output)
         {
             this._output = output;
-            _driver = new ChromeDriver();
+
+            // Set up the ChromeOptions to download the file to a specific folder
+            ChromeOptions options = new ChromeOptions();
+            Directory.CreateDirectory(downloadDirectory);
+            options.AddUserProfilePreference("download.default_directory", downloadDirectory);
+
+            _driver = new ChromeDriver(options);
             _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(5));
         }
 
@@ -268,13 +276,6 @@ namespace QA2_Selenium
         [Fact]
         public void Generate_Download_And_Verify_QR_Code()
         {
-            // Set up the ChromeOptions to download the file to a specific folder
-            ChromeOptions options = new ChromeOptions();
-            string downloadDirectory = Path.Combine(Directory.GetCurrentDirectory(), "MyDownloads"); // Set custom download directory
-            Directory.CreateDirectory(downloadDirectory);
-            options.AddUserProfilePreference("download.default_directory", downloadDirectory);
-
-            using IWebDriver _driver = new ChromeDriver(options);
             HomePage homePage = new HomePage(_driver, _wait);
 
             // Opens Scanner in new tab

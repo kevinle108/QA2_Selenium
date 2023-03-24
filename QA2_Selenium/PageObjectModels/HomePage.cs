@@ -21,7 +21,6 @@ namespace QA_2_Browser_Testing.PageObjectModels
         public string Url = "https://4qrcode.com/";
         public string Title = "4qrcode - Free online QR Code generator ( create a QR Code ).";
 
-
         public HomePage(IWebDriver driver, WebDriverWait wait)
         {
             _driver = driver;
@@ -41,6 +40,7 @@ namespace QA_2_Browser_Testing.PageObjectModels
         public IWebElement ContactLink => _wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("contact")));               
         public IWebElement DonateModal => _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//div[@id='exampleModal']//button[@aria-label='Close']")));
         public IWebElement Alert => _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//div[@role='alert']//div[contains(@class, 'toast-body')]")));
+        public IWebElement LinkButton => _driver.FindElement(By.XPath("//a[@href='#link']"));
         public IWebElement PhoneButton => _driver.FindElement(By.XPath("//a[@href='#tel']"));
         public IWebElement PhoneNumberInput => _driver.FindElement(By.XPath("//div[@id='tel']//input"));
 
@@ -78,7 +78,7 @@ namespace QA_2_Browser_Testing.PageObjectModels
 
         public void EnsurePageLoad()
         {
-            _wait.Until(ExpectedConditions.ElementExists(By.Id("saveTool")));
+            _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//a[@href='#link']")));
         }
 
         // Returns the last day element of the current month. This prevents accidentally selecting the last day of the previous month if present in the date widget
