@@ -10,6 +10,7 @@ using OpenQA.Selenium.Interactions;
 using FluentAssertions.Execution;
 using QA2_Selenium.PageObjectModels;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+using System.Diagnostics;
 
 // Project Requirements: https://docs.google.com/document/d/1YSXJaFg-Am6vQNyrQI8wuJMaX9g0VAs_f7byq2izn-I/edit
 
@@ -17,7 +18,9 @@ using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 // https://4qrcode.com/ + https://4qrcode.com/scan-qr-code.php
 
 // Questions for Class
-// test run order, run headless in real job?
+// test run order, run headless in real job? unit test vs intergration test
+// pause chrome debugger -> setTimeout(function(){ debugger; }, 5000)
+
 
 namespace QA2_Selenium
 {

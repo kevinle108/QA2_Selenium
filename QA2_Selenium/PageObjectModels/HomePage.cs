@@ -44,9 +44,6 @@ namespace QA_2_Browser_Testing.PageObjectModels
         public IWebElement PhoneButton => _driver.FindElement(By.XPath("//a[@href='#tel']"));
         public IWebElement PhoneNumberInput => _driver.FindElement(By.XPath("//div[@id='tel']//input"));
 
-
-
-
         // Event QR Section Elements
         public IWebElement EventButton => _driver.FindElement(By.XPath("//span[text()='Event']/ancestor::a"));
         public IWebElement EventHeader => _driver.FindElement(By.XPath("//*[@id='event']/h2"));
