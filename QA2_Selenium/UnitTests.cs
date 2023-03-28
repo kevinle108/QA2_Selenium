@@ -11,6 +11,7 @@ using FluentAssertions.Execution;
 using QA2_Selenium.PageObjectModels;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using System.Diagnostics;
+using System.Xml.Linq;
 
 // Project Requirements: https://docs.google.com/document/d/1YSXJaFg-Am6vQNyrQI8wuJMaX9g0VAs_f7byq2izn-I/edit
 
@@ -49,6 +50,68 @@ namespace QA2_Selenium
 
             _driver = new ChromeDriver(options);
             _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(5));
+        }
+
+        [Fact]
+        public void Click_Captcha()
+        {
+            ChromeOptions options = new ChromeOptions();
+            options.AddArgument("--start-maximized");
+            //options.AddArguments("disable-infobars");
+            //options.AddArguments("--disable-notifications");
+            //options.AddArguments("--auto-open-devtools-for-tabs");
+
+            using (var driver = new ChromeDriver(options))
+            {
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+                driver.Navigate().GoToUrl("https://demoqa.com/register");
+                // Scrolls page to better view tooltip
+                //((IJavaScriptExecutor)_driver).ExecuteScript("window.scrollTo(0, (document.body.scrollHeight)/2)");
+
+                // Fill out form
+                driver.FindElement(By.Id("firstname")).SendKeys("John");
+                driver.FindElement(By.Id("lastname")).SendKeys("Doe");
+                //driver.FindElement(By.Id("userName")).SendKeys("JohnDoe24");
+                //driver.FindElement(By.Id("password")).SendKeys("superSecretPassword");
+
+                // CAPTCHA checkbox
+                Actions openInNewTab = new Actions(_driver);
+                openInNewTab
+                    .KeyDown(Keys.Tab)
+                    .KeyUp(Keys.Tab)
+                    .Build()
+                    .Perform();
+
+                //Actions openInNewTab = new Actions(_driver);
+                //openInNewTab
+                //    .SendKeys(Keys.Tab)
+                //    .SendKeys(Keys.Tab)
+                //    .SendKeys(Keys.Tab)
+                //    .SendKeys(Keys.Space)
+                //    .Build()
+                //    .Perform();
+
+                //actions.KeyDown(Keys.Tab);
+                //actions.KeyUp(Keys.Tab);
+                //actions.KeyDown(Keys.Space);
+                //actions.KeyUp(Keys.Space);
+
+                //driver.SwitchTo().Frame(driver.FindElement(By.XPath("//iframe[@title='reCAPTCHA']")));
+                //IWebElement checkbox = wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//span[@role='checkbox']")));
+                //checkbox.Click();
+                //IWebElement checkbox = wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//iframe[@title='reCAPTCHA']")));
+                
+                //string js = "(document.evaluate(\"//span[@role='checkbox]\", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue).click()";
+                //((IJavaScriptExecutor)_driver).ExecuteScript(js);
+
+
+                //wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//span[@role='checkbox']"))).Click();
+
+                // Click Register button
+                //driver.FindElement(By.Id("register")).Click();
+
+                Thread.Sleep(5000);
+            }
         }
 
         [Fact]
