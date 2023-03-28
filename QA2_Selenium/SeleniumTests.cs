@@ -14,17 +14,13 @@ using System.Diagnostics;
 
 // Project Requirements: https://docs.google.com/document/d/1YSXJaFg-Am6vQNyrQI8wuJMaX9g0VAs_f7byq2izn-I/edit
 
-// Generate, then Read
+// Generate, then read the QR code
 // https://4qrcode.com/ + https://4qrcode.com/scan-qr-code.php
-
-// Questions for Class
-// test run order, run headless in real job? unit test vs intergration test
-// pause chrome debugger -> setTimeout(function(){ debugger; }, 5000)
 
 
 namespace QA2_Selenium
 {
-    public class UnitTests : IDisposable
+    public class SeleniumTests : IDisposable
     {
         readonly ITestOutputHelper _output;
         IWebDriver _driver;
@@ -38,7 +34,7 @@ namespace QA2_Selenium
         readonly string eventLocation = "Everywhere";
         readonly string eventDescription = "Celebrate pants all month long!";
 
-        public UnitTests(ITestOutputHelper output)
+        public SeleniumTests(ITestOutputHelper output)
         {
             this._output = output;
 
