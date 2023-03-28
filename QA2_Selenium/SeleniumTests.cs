@@ -177,6 +177,7 @@ namespace QA2_Selenium
             homePage.EventReminderNowOption.Click();
 
             homePage.EventReminderDropdown.GetDomProperty("selectedIndex").Should().Be("1");
+            Thread.Sleep(5000);
         }
 
         [Fact]
