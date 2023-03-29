@@ -12,9 +12,9 @@ using QA2_Selenium.PageObjectModels;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using System.Diagnostics;
 
-// Project Requirements: https://docs.google.com/document/d/1YSXJaFg-Am6vQNyrQI8wuJMaX9g0VAs_f7byq2izn-I/edit
+// Repo: https://github.com/kevinle108/QA2_Selenium.git
 
-// Generate, then read the QR code
+// Website to generate then read the QR code
 // https://4qrcode.com/ + https://4qrcode.com/scan-qr-code.php
 
 
