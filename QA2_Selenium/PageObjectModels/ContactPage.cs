@@ -26,11 +26,11 @@ namespace QA2_Selenium.PageObjectModels
             EnsurePageLoad();
         }
 
-        public IWebElement ContactEmail => _driver.FindElement(By.XPath("//section[@id='contact']//p"));
+        public IWebElement ContactEmail => _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//section[@id='contact']//p")));
 
         public void EnsurePageLoad()
         {
-            _wait.Until(ExpectedConditions.ElementIsVisible((By.XPath("//section[@id='contact']//p"))));
+            _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//section[@id='contact']//p")));
         }
     }
 }

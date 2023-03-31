@@ -27,7 +27,7 @@ namespace QA2_Selenium.PageObjectModels
         }
 
 
-        public IWebElement FileUpload => _driver.FindElement(By.XPath("//input[@id='file-selector']"));
+        public IWebElement FileUpload => _wait.Until(ExpectedConditions.ElementExists(By.XPath("//input[@id='file-selector']")));
 
         // Explict wait for a matching partial text to appear in the name element
         public IWebElement FileName
@@ -46,7 +46,7 @@ namespace QA2_Selenium.PageObjectModels
             get
             {
                 //CheckModal();
-                IWebElement scanResult = _driver.FindElement(By.Id("file-qr-result"));
+                IWebElement scanResult = _wait.Until(ExpectedConditions.ElementIsVisible(By.Id("file-qr-result")));
                 _wait.Until(
                     ExpectedConditions
                     .TextToBePresentInElementValue(scanResult, "BEGIN:VCALENDAR"));
@@ -64,10 +64,10 @@ namespace QA2_Selenium.PageObjectModels
         public IWebElement CheckModal()
         {
             string xpath = "//div[@id='saveTool']//button[@aria-label='Close']";
-            var ele = _driver.FindElement((By.XPath(xpath)));
+            var ele = _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath(xpath)));
             ele = _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath(xpath)));
             ele.Click();
-            ele = _driver.FindElement((By.XPath(xpath)));
+            ele = _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath(xpath)));
             return ele;
         }
 
