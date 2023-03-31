@@ -6,6 +6,9 @@
 
 A website that lets you generate and scan QR codes for various purposes (ie. links, texts, events, etc.)
 
+## Test Results
+![Test Results](https://github.com/kevinle108/QA2_Selenium/blob/master/tests_passed.png)
+
 ## Project Requirements
 
 Create a suite of automated UI tests for publicly accessible web applications. You may use any online web application you choose, and you are not required to write all of your tests against the same application. You may write your tests in the same project as your API tests from the midterm, or you may create a new one. You may use any Nuget packages, test frameworks, or assertion libraries you choose, but your solution must be in C#. Create at least 15 automated UI tests. Your tests should each be unique and test a different use case of the web application. Your tests should also cover all of the following criteria:
