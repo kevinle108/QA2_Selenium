@@ -7,7 +7,7 @@
 A website that lets you generate and scan QR codes for various purposes (ie. links, texts, events, etc.)
 
 ## Test Results
-![Test Results](https://github.com/kevinle108/QA2_Selenium/blob/master/tests_passed.png)
+![Test Results](https://github.com/kevinle108/QA2_Selenium/blob/master/tests.png)
 
 ## Project Requirements
 
