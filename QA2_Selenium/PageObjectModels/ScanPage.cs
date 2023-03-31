@@ -24,6 +24,7 @@ namespace QA2_Selenium.PageObjectModels
             _driver = driver;
             _wait = wait;
             _driver.Manage().Window.Maximize();
+            EnsurePageLoad();
         }
 
 
@@ -58,7 +59,7 @@ namespace QA2_Selenium.PageObjectModels
 
         public void EnsurePageLoad()
         {
-            _wait.Until(ExpectedConditions.ElementExists(By.Id("saveTool")));
+            _wait.Until(ExpectedConditions.ElementExists(By.XPath("//div[@id='saveTool']")));
         }
 
         public IWebElement CheckModal()
