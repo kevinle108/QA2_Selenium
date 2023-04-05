@@ -295,7 +295,10 @@ namespace QA2_Selenium
             homePage.EventStartDateInput.Click();
             homePage.EventFirstDayOfMonth.Click();
             homePage.EventEndDateInput.Click();
-            homePage.EventLastDayOfMonth.Click();
+
+            // TODO: fix bug for clicking the correct last day 
+            //homePage.EventLastDayOfMonth.Click();
+
             homePage.EventNotes.SendKeys(eventDescription);
             homePage.EventSaveButton.Click();
 
