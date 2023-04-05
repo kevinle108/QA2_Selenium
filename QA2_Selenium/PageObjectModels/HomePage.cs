@@ -68,7 +68,6 @@ namespace QA_2_Browser_Testing.PageObjectModels
             var ele = _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//div[@id='exampleModal']//button[@aria-label='Close']")));
             ele = _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//div[@id='exampleModal']//button[@aria-label='Close']")));
             ele.Click();
-            ele = _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[@id='exampleModal']//button[@aria-label='Close']")));
             return ele;
         }
 
@@ -81,11 +80,16 @@ namespace QA_2_Browser_Testing.PageObjectModels
         // Returns the last day element of the current month. This prevents accidentally selecting the last day of the previous month if present in the date widget
         private IWebElement GetLastDay()
         {
+            int month = DateTime.Now.Month;
             int lastDayOfMonth = DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month);
-            _wait.Until(ExpectedConditions.ElementToBeClickable(EventDateWidget));
-            var dayOptions = EventDateWidget.FindElements(By.XPath($"//td[text()='{lastDayOfMonth}']"));
-            IWebElement lastDay = dayOptions[^1];
-            return _wait.Until(ExpectedConditions.ElementToBeClickable(lastDay));
+            int year = DateTime.Now.Year;
+
+            string xpath = $"//td[@data-day='{month}/{lastDayOfMonth}/{year}']";
+            if (month < 10) xpath = $"//td[@data-day='0{month}/{lastDayOfMonth}/{year}']";
+
+            _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[@class='bootstrap-datetimepicker-widget dropdown-menu top']")));
+            var lastDay = _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath(xpath)));
+            return lastDay;
         }
 
         // Used for exposing DateWidget html structure since inspecting in Chrome Dev Tools would cause the DateWidget to lose focus and disappear from the DOM tree

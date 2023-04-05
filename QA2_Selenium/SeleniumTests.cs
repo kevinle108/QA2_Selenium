@@ -297,7 +297,7 @@ namespace QA2_Selenium
             homePage.EventEndDateInput.Click();
 
             // TODO: fix bug for clicking the correct last day 
-            //homePage.EventLastDayOfMonth.Click();
+            homePage.EventLastDayOfMonth.Click();
 
             homePage.EventNotes.SendKeys(eventDescription);
             homePage.EventSaveButton.Click();
@@ -315,8 +315,6 @@ namespace QA2_Selenium
             // Get the file name and path for file upload
             string fileName = homePage.EventPngName.GetAttribute("download");
             string filePath = Path.Combine(downloadDirectory, fileName);
-            _output.WriteLine(fileName);
-            _output.WriteLine(Directory.GetCurrentDirectory());
             _output.WriteLine(filePath);
 
             var scanPage = new ScanPage(_driver, _wait);
@@ -324,7 +322,6 @@ namespace QA2_Selenium
 
             // Upload file
             IWebElement saveModal = _driver.FindElement(By.XPath("//div[@id='saveTool']//button[@aria-label='Close']"));
-            _output.WriteLine("saveModal " + saveModal.Displayed.ToString());
             scanPage.FileUpload.SendKeys(filePath);
 
             // Get the result
